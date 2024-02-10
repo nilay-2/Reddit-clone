@@ -2,7 +2,7 @@ import React from "react";
 
 const Post: React.FC = () => {
   return (
-    <div className="max-w-4xl h-auto mx-auto p-2 rounded-md hover:bg-reddit">
+    <div className="max-w-4xl h-auto mx-auto md:p-2 p-1 rounded-md hover:bg-reddit">
       <div className="post-author-details flex justify-between">
         <div className="flex gap-1 items-center text-slate-400 text-sm">
           <i className="bi bi-person-circle text-2xl mr-2"></i>
