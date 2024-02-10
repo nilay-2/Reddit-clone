@@ -1,0 +1,47 @@
+import React from "react";
+import { Outlet } from "react-router-dom";
+const Header: React.FC = () => {
+  return (
+    <div
+      className="w-screen h-screen sm:p-0 p-2 mx-auto"
+      style={{ maxWidth: "2000px" }}
+    >
+      <div className="mx-auto" style={{ maxWidth: "1400px" }}>
+        <header className="flex lg:gap-14 gap-3 justify-between p-3 items-center border-b border-b-slate-800">
+          {/* logo */}
+          <div className="logo">
+            <i className="bi bi-reddit text-4xl text-orange-600"></i>
+          </div>
+          {/* search-bar */}
+          <div
+            className="search-bar grow rounded-full px-4 max-w-4xl"
+            style={{ backgroundColor: "#17282a" }}
+          >
+            <form className="w-full">
+              <div className="input-group flex items-center">
+                <i className="bi bi-search text-xl h-full p-1 text-slate-600"></i>
+                <input
+                  type="text"
+                  placeholder="Search Reddit"
+                  className="w-full p-2 outline-none text-white"
+                  style={{ backgroundColor: "#17282a" }}
+                />
+              </div>
+            </form>
+          </div>
+          {/* options-bar */}
+          <div className="options-bar">
+            <button className="md:py-2 md:px-5 px-4 py-1 rounded-full bg-orange-600 text-white font-semibold hover:bg-orange-500 active:bg-orange-700 flex justify-center items-center text-sm md:text-base">
+              Log in
+            </button>
+          </div>
+        </header>
+        <main>
+          <Outlet />
+        </main>
+      </div>
+    </div>
+  );
+};
+
+export default Header;
