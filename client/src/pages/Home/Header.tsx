@@ -1,9 +1,16 @@
-import React from "react";
+import React, { useState } from "react";
 import { Outlet } from "react-router-dom";
+import Auth from "./Auth";
 const Header: React.FC = () => {
+  const [openAuth, setOpenAuth] = useState<Boolean>(false);
+
+  const authHandler = () => {
+    setOpenAuth(true);
+  };
+
   return (
     <div
-      className="w-screen h-screen mx-auto p-2"
+      className="w-screen h-screen mx-auto p-2 z-0"
       style={{ maxWidth: "2000px" }}
     >
       <div className="mx-auto" style={{ maxWidth: "1400px" }}>
@@ -31,7 +38,10 @@ const Header: React.FC = () => {
           </div>
           {/* options-bar */}
           <div className="options-bar">
-            <button className="md:py-2 md:px-5 px-4 py-1 rounded-full bg-orange-600 text-white md:font-semibold hover:bg-orange-500 active:bg-orange-700 flex justify-center items-center text-xs md:text-base">
+            <button
+              onClick={authHandler}
+              className="md:py-2 md:px-5 px-4 py-1 rounded-full bg-orange-600 text-white md:font-semibold hover:bg-orange-500 active:bg-orange-700 flex justify-center items-center text-xs md:text-base"
+            >
               Log in
             </button>
           </div>
@@ -40,6 +50,7 @@ const Header: React.FC = () => {
           <Outlet />
         </main>
       </div>
+      {openAuth && <Auth setOpenAuth={setOpenAuth} />}
     </div>
   );
 };
