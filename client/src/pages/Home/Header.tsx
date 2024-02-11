@@ -3,11 +3,11 @@ import { Outlet } from "react-router-dom";
 const Header: React.FC = () => {
   return (
     <div
-      className="w-screen h-screen sm:p-0 p-2 mx-auto"
+      className="w-screen h-screen mx-auto p-2"
       style={{ maxWidth: "2000px" }}
     >
       <div className="mx-auto" style={{ maxWidth: "1400px" }}>
-        <header className="flex lg:gap-14 gap-3 justify-between p-3 items-center border-b border-b-slate-800">
+        <header className="flex lg:gap-14 gap-3 justify-between p-1 items-center border-b border-b-slate-800">
           {/* logo */}
           <div className="logo">
             <i className="bi bi-reddit text-4xl text-orange-600"></i>
@@ -31,7 +31,7 @@ const Header: React.FC = () => {
           </div>
           {/* options-bar */}
           <div className="options-bar">
-            <button className="md:py-2 md:px-5 px-4 py-1 rounded-full bg-orange-600 text-white font-semibold hover:bg-orange-500 active:bg-orange-700 flex justify-center items-center text-sm md:text-base">
+            <button className="md:py-2 md:px-5 px-4 py-1 rounded-full bg-orange-600 text-white md:font-semibold hover:bg-orange-500 active:bg-orange-700 flex justify-center items-center text-xs md:text-base">
               Log in
             </button>
           </div>

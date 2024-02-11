@@ -7,7 +7,6 @@ function App() {
       className="mx-auto text-white flex gap-3 justify-between lg:p-0 p-1"
       style={{ maxWidth: "1300px", height: "calc(100vh - 70px)" }}
     >
-      {/* welcome to the reddit clone app{" "} */}
       <SideBar />
       <Feed />
       <TopCommunities />
