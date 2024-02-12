@@ -1,16 +1,18 @@
 import React, { useState } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
-
+import { login, signup } from "../../app/reducers/authReducer";
+import { useDispatch } from "react-redux";
+import { AppDispatch } from "../../app/store";
 interface AuthOptions {
   authenticationType: string;
   formTitle: string;
   submitTitle: string;
-  submitFunction?: () => void;
 }
 
-interface Credentials {
+export interface Credentials {
   email: string;
   password: string;
+  username?: string;
 }
 
 const Auth: React.FC<{
@@ -23,8 +25,16 @@ const Auth: React.FC<{
     submitTitle: "Sign in",
   });
 
+  const dispatch = useDispatch<AppDispatch>();
+
   // submit handler
-  const onSubmit: SubmitHandler<Credentials> = (data) => console.log(data);
+  const onSubmit: SubmitHandler<Credentials> = async (data) => {
+    if (authType.authenticationType === "sign_up") {
+      dispatch(signup(data));
+    } else {
+      dispatch(login(data));
+    }
+  };
 
   // react-hook-form
   const {
@@ -86,6 +96,7 @@ const Auth: React.FC<{
               >
                 Email address
               </label>
+
               <div className="mt-2">
                 <input
                   id="email"
@@ -99,6 +110,33 @@ const Auth: React.FC<{
                 )}
               </div>
             </div>
+            {authType.authenticationType === "sign_up" && (
+              <div>
+                <label
+                  htmlFor="email"
+                  className="block text-sm font-medium leading-6 text-gray-900"
+                >
+                  Username
+                </label>
+
+                <div className="mt-2">
+                  <input
+                    id="username"
+                    type="text"
+                    autoComplete="username"
+                    {...register("username", {
+                      required: "Username is required",
+                    })}
+                    className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                  />
+                  {errors.username && (
+                    <span className="text-red-700">
+                      {errors.username.message}
+                    </span>
+                  )}
+                </div>
+              </div>
+            )}
 
             <div>
               <div className="flex items-center justify-between">

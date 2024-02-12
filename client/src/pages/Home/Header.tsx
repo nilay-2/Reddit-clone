@@ -1,12 +1,22 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Outlet } from "react-router-dom";
 import Auth from "./Auth";
+import { verify } from "../../app/reducers/authReducer";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "../../app/store";
 const Header: React.FC = () => {
   const [openAuth, setOpenAuth] = useState<Boolean>(false);
+
+  const authState = useSelector((state: RootState) => state.auth);
+  const dispatch = useDispatch<AppDispatch>();
 
   const authHandler = () => {
     setOpenAuth(true);
   };
+
+  useEffect(() => {
+    dispatch(verify());
+  }, [dispatch]);
 
   return (
     <div
@@ -42,7 +52,7 @@ const Header: React.FC = () => {
               onClick={authHandler}
               className="md:py-2 md:px-5 px-4 py-1 rounded-full bg-orange-600 text-white md:font-semibold hover:bg-orange-500 active:bg-orange-700 flex justify-center items-center text-xs md:text-base"
             >
-              Log in
+              {authState.username}
             </button>
           </div>
         </header>
