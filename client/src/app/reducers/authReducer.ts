@@ -5,6 +5,7 @@ interface Auth {
   username: string;
   email: string;
   photo: string | null;
+  loading: boolean;
 }
 
 const initialState: Auth = {
@@ -12,6 +13,7 @@ const initialState: Auth = {
   username: "",
   email: "",
   photo: null,
+  loading: false,
 };
 
 const authSlice = createSlice({
@@ -19,32 +21,52 @@ const authSlice = createSlice({
   initialState: initialState,
   reducers: {},
   extraReducers(builder) {
+    builder.addCase(verify.pending, (state) => {
+      state.loading = true;
+    });
     builder.addCase(verify.fulfilled, (state, action) => {
+      if (!action.payload) return state;
       const { data } = action.payload;
       if (data) {
-        state.id = data.id;
-        state.username = data.username;
-        state.email = data.email;
-        state.photo = data.photo;
+        return {
+          ...state,
+          id: data.id,
+          username: data.username,
+          email: data.email,
+          photo: data.photo,
+          loading: false,
+        };
       }
+      return {
+        ...state,
+        loading: false,
+      };
     });
 
     builder.addCase(login.fulfilled, (state, action) => {
+      if (!action.payload) return state;
       const { data } = action.payload;
       if (data) {
-        state.id = data.id;
-        state.username = data.username;
-        state.email = data.email;
-        state.photo = data.photo;
+        return {
+          ...state,
+          id: data.id,
+          username: data.username,
+          email: data.email,
+          photo: data.photo,
+        };
       }
     });
     builder.addCase(signup.fulfilled, (state, action) => {
+      if (!action.payload) return state;
       const { data } = action.payload;
       if (data) {
-        state.id = data.id;
-        state.username = data.username;
-        state.email = data.email;
-        state.photo = data.photo;
+        return {
+          ...state,
+          id: data.id,
+          username: data.username,
+          email: data.email,
+          photo: data.photo,
+        };
       }
     });
   },

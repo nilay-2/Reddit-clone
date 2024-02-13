@@ -4,7 +4,7 @@ const TopCommunities: React.FC = () => {
   return (
     <div
       className="w-60 md:w-72 p-2 rounded-lg sm:block hidden mt-4 h-fit"
-      style={{ backgroundColor: "#04090A" }}
+      style={{ backgroundColor: "#28282B" }}
     >
       <p className="text-slate-400 p-2">Popular Communities</p>
 

@@ -1,7 +1,10 @@
 import express, { Express, Request, Response } from "express";
 import cors from "cors";
-import authRouter from "./routes/authRouter";
 import cookieParser from "cookie-parser";
+
+// routers
+import authRouter from "./routes/authRouter";
+import postsRouter from "./routes/postsRouter";
 import dotenv from "dotenv";
 dotenv.config();
 
@@ -26,6 +29,7 @@ app.get("/", (req: Request, res: Response) => {
 });
 
 app.use("/api/auth", authRouter);
+app.use("/api/posts", postsRouter);
 
 app.listen(port, () => {
   console.log(`App running on port ${port}`);

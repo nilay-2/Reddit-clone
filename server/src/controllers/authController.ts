@@ -1,4 +1,4 @@
-import { Response, Request } from "express";
+import { Response, Request, NextFunction } from "express";
 import client from "../db";
 import jwt, { decode } from "jsonwebtoken";
 import dotenv from "dotenv";
@@ -7,13 +7,21 @@ dotenv.config();
 const JWT_SECRET: string = process.env.JWT_SECRET as string;
 const COOKIE_EXPIRY: number = parseInt(process.env.COOKIE_EXPIRY as string);
 
-interface User {
+export interface User {
   id: string;
   email: string;
   username: string;
   password: string;
   photo?: string;
   passwordChangedat?: string;
+}
+
+declare global {
+  namespace Express {
+    interface Request {
+      user: User;
+    }
+  }
 }
 
 interface CookieOpts {
@@ -141,7 +149,11 @@ export const logIn = async (req: Request, res: Response) => {
   }
 };
 
-export const verify = async (req: Request, res: Response) => {
+export const verify = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     // check if token exists
     const token: string = req.cookies.jwt;
@@ -162,16 +174,21 @@ export const verify = async (req: Request, res: Response) => {
       )
     ).rows[0] as User;
 
-    return res.status(200).json({
-      error: false,
-      message: "Authorized successfully",
-      data: user,
-    } as SeriveResponse);
+    req.user = user;
+    next();
   } catch (error) {
-    return res.json(400).json({
+    return res.status(400).json({
       error: true,
       message: "Authentication failed please try again later",
       data: null,
     } as SeriveResponse);
   }
+};
+
+export const allowUsersOnDashboard = async (req: Request, res: Response) => {
+  res.status(200).json({
+    error: false,
+    message: "Authorized successfully",
+    data: req.user,
+  } as SeriveResponse);
 };

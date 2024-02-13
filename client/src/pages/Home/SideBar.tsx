@@ -2,7 +2,10 @@ import React from "react";
 
 const SideBar: React.FC = () => {
   return (
-    <div className="w-1/6 md:block hidden mt-4 h-fit">
+    <div
+      className="w-1/6 md:block hidden mt-4 h-fit rounded-lg"
+      style={{ backgroundColor: "#28282B" }}
+    >
       <div className="list-container border-b border-b-slate-800">
         <div className="p-2 text-sm text-slate-400">Recent</div>
         <ul className="mt-2 pl-4">

@@ -4,7 +4,7 @@ module.exports = {
   theme: {
     extend: {
       backgroundColor: {
-        reddit: "#17282a",
+        reddit: "#28282B",
       },
     },
   },

@@ -34,6 +34,7 @@ const Auth: React.FC<{
     } else {
       dispatch(login(data));
     }
+    reset();
   };
 
   // react-hook-form
@@ -41,6 +42,7 @@ const Auth: React.FC<{
     register,
     handleSubmit,
     formState: { errors },
+    reset,
   } = useForm<Credentials>();
 
   const closeAuthBox = () => {
@@ -48,6 +50,7 @@ const Auth: React.FC<{
   };
 
   const toggleAuthType = () => {
+    reset();
     if (authType.authenticationType === "sign_in") {
       setAuthType((prev) => {
         return {
