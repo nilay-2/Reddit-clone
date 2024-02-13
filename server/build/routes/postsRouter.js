@@ -4,9 +4,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
+const postsController_1 = require("../controllers/postsController");
 const authController_1 = require("../controllers/authController");
-const authRouter = express_1.default.Router();
-authRouter.route("/signup").post(authController_1.signUp);
-authRouter.route("/login").post(authController_1.logIn);
-authRouter.route("/verify").get(authController_1.verify, authController_1.allowUsersOnDashboard);
-exports.default = authRouter;
+const postsRouter = express_1.default.Router();
+// verify if user is logged in
+postsRouter.use(authController_1.verify);
+postsRouter.route("/createpost").post(postsController_1.createPost);
+exports.default = postsRouter;

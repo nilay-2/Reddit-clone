@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.verify = exports.logIn = exports.signUp = void 0;
+exports.allowUsersOnDashboard = exports.verify = exports.logIn = exports.signUp = void 0;
 const db_1 = __importDefault(require("../db"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const dotenv_1 = __importDefault(require("dotenv"));
@@ -107,7 +107,7 @@ const logIn = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     }
 });
 exports.logIn = logIn;
-const verify = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const verify = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         // check if token exists
         const token = req.cookies.jwt;
@@ -120,14 +120,11 @@ const verify = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         }
         const decoded = jsonwebtoken_1.default.verify(token, JWT_SECRET);
         const user = (yield db_1.default.query("select id, username, email, photo from users where email = $1", [decoded.email])).rows[0];
-        return res.status(200).json({
-            error: false,
-            message: "Authorized successfully",
-            data: user,
-        });
+        req.user = user;
+        next();
     }
     catch (error) {
-        return res.json(400).json({
+        return res.status(400).json({
             error: true,
             message: "Authentication failed please try again later",
             data: null,
@@ -135,3 +132,11 @@ const verify = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     }
 });
 exports.verify = verify;
+const allowUsersOnDashboard = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    res.status(200).json({
+        error: false,
+        message: "Authorized successfully",
+        data: req.user,
+    });
+});
+exports.allowUsersOnDashboard = allowUsersOnDashboard;
