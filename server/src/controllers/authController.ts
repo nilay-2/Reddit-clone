@@ -1,6 +1,7 @@
 import { Response, Request, NextFunction } from "express";
 import client from "../db";
-import jwt, { decode } from "jsonwebtoken";
+import { ServiceResponse } from "../utils/ResponseInterface";
+import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 dotenv.config();
 
@@ -16,6 +17,18 @@ export interface User {
   passwordChangedat?: string;
 }
 
+interface AuthResponse extends ServiceResponse {
+  data: User | null;
+}
+
+const authResponseCreator = (
+  error: boolean,
+  message: string,
+  data: User | null = null
+): AuthResponse => {
+  return { error: error, message: message, data: data };
+};
+
 declare global {
   namespace Express {
     interface Request {
@@ -30,12 +43,6 @@ interface CookieOpts {
   path: string;
   domain: string;
   expires: Date;
-}
-
-interface SeriveResponse {
-  error: boolean;
-  message: string;
-  data: Record<string, any> | null;
 }
 
 const cookieOptions: CookieOpts = {
@@ -70,11 +77,9 @@ export const signUp = async (req: Request, res: Response) => {
     ).rows[0] as User;
 
     if (user) {
-      return res.status(409).json({
-        error: true,
-        message: "You already have an account.",
-        data: user,
-      } as SeriveResponse);
+      return res
+        .status(409)
+        .json(authResponseCreator(true, "You already have an account.", user));
     }
     // if user does not exist then create new user, create jwt token and pass it in cookies
     const newUser = (
@@ -89,18 +94,17 @@ export const signUp = async (req: Request, res: Response) => {
     return res
       .cookie("jwt", token, cookieOptions)
       .status(201)
-      .json({
-        error: false,
-        message: "Registerd successfully",
-        data: newUser,
-      } as SeriveResponse);
+      .json(authResponseCreator(false, "Registerd successfully", newUser));
   } catch (error) {
     console.log(error);
-    res.status(400).json({
-      error: true,
-      message: "Authentication failed please try again later",
-      data: null,
-    } as SeriveResponse);
+    res
+      .status(400)
+      .json(
+        authResponseCreator(
+          true,
+          "Authentication failed please try again later"
+        )
+      );
   }
 };
 
@@ -113,19 +117,20 @@ export const logIn = async (req: Request, res: Response) => {
 
     // check if users exists
     if (!user) {
-      return res.status(404).json({
-        error: true,
-        message: "Email not found, please create an accout.",
-        data: null,
-      } as SeriveResponse);
+      return res
+        .status(404)
+        .json(
+          authResponseCreator(
+            true,
+            "Email not found, please create an account."
+          )
+        );
     }
     // check if passwords match
     if (user.password !== password) {
-      return res.status(401).json({
-        error: true,
-        message: "Invalid credentials.",
-        data: null,
-      } as SeriveResponse);
+      return res
+        .status(401)
+        .json(authResponseCreator(true, "Invalid credentials."));
     }
 
     // remove password property from the object while sending response
@@ -135,17 +140,16 @@ export const logIn = async (req: Request, res: Response) => {
     return res
       .cookie("jwt", token)
       .status(200)
-      .json({
-        error: false,
-        message: "Log in successful",
-        data: user,
-      } as SeriveResponse);
+      .json(authResponseCreator(false, "Log in successful", user));
   } catch (error) {
-    return res.json(400).json({
-      error: true,
-      message: "Authentication failed please try again later",
-      data: null,
-    } as SeriveResponse);
+    return res
+      .json(400)
+      .json(
+        authResponseCreator(
+          true,
+          "Authentication failed please try again later"
+        )
+      );
   }
 };
 
@@ -158,11 +162,7 @@ export const verify = async (
     // check if token exists
     const token: string = req.cookies.jwt;
     if (!token) {
-      return res.status(401).json({
-        error: true,
-        message: "Please login",
-        data: null,
-      } as SeriveResponse);
+      return res.status(401).json(authResponseCreator(true, "Please login"));
     }
 
     const decoded = jwt.verify(token, JWT_SECRET) as { email?: string };
@@ -177,18 +177,19 @@ export const verify = async (
     req.user = user;
     next();
   } catch (error) {
-    return res.status(400).json({
-      error: true,
-      message: "Authentication failed please try again later",
-      data: null,
-    } as SeriveResponse);
+    return res
+      .status(400)
+      .json(
+        authResponseCreator(
+          true,
+          "Authentication failed please try again later"
+        )
+      );
   }
 };
 
 export const allowUsersOnDashboard = async (req: Request, res: Response) => {
-  res.status(200).json({
-    error: false,
-    message: "Authorized successfully",
-    data: req.user,
-  } as SeriveResponse);
+  res
+    .status(200)
+    .json(authResponseCreator(false, "Authorized successfully", req.user));
 };

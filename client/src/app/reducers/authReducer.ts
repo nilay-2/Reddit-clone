@@ -1,5 +1,12 @@
 import { PayloadAction, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { Credentials } from "../../pages/Home/Auth";
+import { toast } from "react-toastify";
+
+export const toastOpts = {
+  theme: "dark",
+  autoClose: 3000,
+};
+
 interface Auth {
   id: string;
   username: string;
@@ -93,7 +100,6 @@ export const verify = createAsyncThunk("auth/verify", async () => {
 export const login = createAsyncThunk(
   "auth/login",
   async (cred: Credentials) => {
-    console.log(cred);
     try {
       const res = await fetch("http://localhost:5000/api/auth/login", {
         method: "POST",
@@ -106,8 +112,14 @@ export const login = createAsyncThunk(
 
       const jsonRes = await res.json();
       console.log(jsonRes);
+      if (jsonRes.error) {
+        toast.error(jsonRes.message, toastOpts);
+      } else {
+        toast.success(jsonRes.message, toastOpts);
+      }
       return jsonRes;
     } catch (error) {
+      console.log("something went wrong");
       console.log(error);
     }
   }
@@ -127,7 +139,11 @@ export const signup = createAsyncThunk(
       });
 
       const jsonResponse = await res.json();
-
+      if (jsonResponse.error) {
+        toast.error(jsonResponse.message, toastOpts);
+      } else {
+        toast.success(jsonResponse.message, toastOpts);
+      }
       return jsonResponse;
     } catch (error) {
       console.log(error);

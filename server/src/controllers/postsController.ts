@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import client from "../db";
+import { ServiceResponse } from "../utils/ResponseInterface";
 
 interface Post {
   createdAt: number;
@@ -11,6 +12,18 @@ interface Post {
   upvotes: number;
   downvotes: number;
 }
+
+interface PostsResponse extends ServiceResponse {
+  data: Post | null;
+}
+
+const postsResponseCreator = (
+  error: boolean,
+  message: string,
+  data: Post | null = null
+): PostsResponse => {
+  return { error: error, message: message, data: data };
+};
 
 export const createPost = async (req: Request, res: Response) => {
   try {
@@ -24,17 +37,12 @@ export const createPost = async (req: Request, res: Response) => {
       )
     ).rows[0] as Post;
 
-    res.status(200).json({
-      error: false,
-      message: "Post created successfully",
-      data: post,
-    });
+    res
+      .status(200)
+      .json(postsResponseCreator(false, "Post created successfully", post));
   } catch (error) {
     console.log(error);
-    res.status(400).json({
-      error: true,
-      message: "Please try again later",
-      data: null,
-    });
+
+    res.status(400).json(postsResponseCreator(true, "Please try again later"));
   }
 };

@@ -8,7 +8,8 @@ import Placeholder from "@tiptap/extension-placeholder";
 import TextareaAutosize from "react-textarea-autosize";
 import { RootState, AppDispatch } from "../app/store";
 import { useSelector } from "react-redux";
-
+import { toast } from "react-toastify";
+import { toastOpts } from "../app/reducers/authReducer";
 interface PostData {
   createdAt: number;
   authorId: string;
@@ -100,6 +101,11 @@ const Editor: React.FC = () => {
 
       const jsonRes = await res.json();
       console.log(jsonRes);
+      if (jsonRes.error) {
+        toast.error(jsonRes.message, toastOpts);
+      } else {
+        toast.success(jsonRes.message, toastOpts);
+      }
     } catch (error) {
       console.log(error);
     }

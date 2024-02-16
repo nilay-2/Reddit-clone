@@ -8,6 +8,9 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { Provider } from "react-redux";
 import { store } from "./app/store";
 import CreatePost from "./pages/Home/CreatePost";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import Protect from "./Components/Protect";
 // routes
 const router = createBrowserRouter([
   {
@@ -20,7 +23,7 @@ const router = createBrowserRouter([
       },
       {
         path: "submit",
-        element: <CreatePost />,
+        element: <Protect children={<CreatePost />} />,
       },
     ],
   },
@@ -34,6 +37,7 @@ root.render(
   // <React.StrictMode>
   <Provider store={store}>
     <RouterProvider router={router} />
+    <ToastContainer />
   </Provider>
   // </React.StrictMode>
 );
