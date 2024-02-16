@@ -14,24 +14,21 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.createPost = void 0;
 const db_1 = __importDefault(require("../db"));
+const postsResponseCreator = (error, message, data = null) => {
+    return { error: error, message: message, data: data };
+};
 const createPost = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         // create new post
         const { createdAt, authorId, title, htmlBody, textBody } = req.body;
         const post = (yield db_1.default.query("insert into posts (createdat, authorid, title, htmlbody, textbody) values ($1, $2, $3, $4, $5) returning id, createdat, authorid, title, htmlbody, comments, upvotes, downvotes", [createdAt, authorId, title, htmlBody, textBody])).rows[0];
-        res.status(200).json({
-            error: false,
-            message: "Post created successfully",
-            data: post,
-        });
+        res
+            .status(200)
+            .json(postsResponseCreator(false, "Post created successfully", post));
     }
     catch (error) {
         console.log(error);
-        res.status(400).json({
-            error: true,
-            message: "Please try again later",
-            data: null,
-        });
+        res.status(400).json(postsResponseCreator(true, "Please try again later"));
     }
 });
 exports.createPost = createPost;

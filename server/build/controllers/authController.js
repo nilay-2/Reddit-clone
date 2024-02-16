@@ -19,6 +19,9 @@ const dotenv_1 = __importDefault(require("dotenv"));
 dotenv_1.default.config();
 const JWT_SECRET = process.env.JWT_SECRET;
 const COOKIE_EXPIRY = parseInt(process.env.COOKIE_EXPIRY);
+const authResponseCreator = (error, message, data = null) => {
+    return { error: error, message: message, data: data };
+};
 const cookieOptions = {
     httpOnly: true,
     secure: false,
@@ -38,11 +41,9 @@ const signUp = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         // check if user already exists
         const user = (yield db_1.default.query("select id, username, email, photo from users where email = $1", [email])).rows[0];
         if (user) {
-            return res.status(409).json({
-                error: true,
-                message: "You already have an account.",
-                data: user,
-            });
+            return res
+                .status(409)
+                .json(authResponseCreator(true, "You already have an account.", user));
         }
         // if user does not exist then create new user, create jwt token and pass it in cookies
         const newUser = (yield db_1.default.query("Insert into users (email, username, password) values ($1, $2, $3) returning id, email, username, photo", [email, username, password])).rows[0];
@@ -50,19 +51,13 @@ const signUp = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         return res
             .cookie("jwt", token, cookieOptions)
             .status(201)
-            .json({
-            error: false,
-            message: "Registerd successfully",
-            data: newUser,
-        });
+            .json(authResponseCreator(false, "Registerd successfully", newUser));
     }
     catch (error) {
         console.log(error);
-        res.status(400).json({
-            error: true,
-            message: "Authentication failed please try again later",
-            data: null,
-        });
+        res
+            .status(400)
+            .json(authResponseCreator(true, "Authentication failed please try again later"));
     }
 });
 exports.signUp = signUp;
@@ -72,19 +67,15 @@ const logIn = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const user = (yield db_1.default.query("select * from users where email = $1", [email])).rows[0];
         // check if users exists
         if (!user) {
-            return res.status(404).json({
-                error: true,
-                message: "Email not found, please create an accout.",
-                data: null,
-            });
+            return res
+                .status(404)
+                .json(authResponseCreator(true, "Email not found, please create an account."));
         }
         // check if passwords match
         if (user.password !== password) {
-            return res.status(401).json({
-                error: true,
-                message: "Invalid credentials.",
-                data: null,
-            });
+            return res
+                .status(401)
+                .json(authResponseCreator(true, "Invalid credentials."));
         }
         // remove password property from the object while sending response
         const token = generateToken(user.email, user.username, user.password);
@@ -92,18 +83,12 @@ const logIn = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         return res
             .cookie("jwt", token)
             .status(200)
-            .json({
-            error: false,
-            message: "Log in successful",
-            data: user,
-        });
+            .json(authResponseCreator(false, "Log in successful", user));
     }
     catch (error) {
-        return res.json(400).json({
-            error: true,
-            message: "Authentication failed please try again later",
-            data: null,
-        });
+        return res
+            .json(400)
+            .json(authResponseCreator(true, "Authentication failed please try again later"));
     }
 });
 exports.logIn = logIn;
@@ -112,11 +97,7 @@ const verify = (req, res, next) => __awaiter(void 0, void 0, void 0, function* (
         // check if token exists
         const token = req.cookies.jwt;
         if (!token) {
-            return res.status(401).json({
-                error: true,
-                message: "Please login",
-                data: null,
-            });
+            return res.status(401).json(authResponseCreator(true, "Please login"));
         }
         const decoded = jsonwebtoken_1.default.verify(token, JWT_SECRET);
         const user = (yield db_1.default.query("select id, username, email, photo from users where email = $1", [decoded.email])).rows[0];
@@ -124,19 +105,15 @@ const verify = (req, res, next) => __awaiter(void 0, void 0, void 0, function* (
         next();
     }
     catch (error) {
-        return res.status(400).json({
-            error: true,
-            message: "Authentication failed please try again later",
-            data: null,
-        });
+        return res
+            .status(400)
+            .json(authResponseCreator(true, "Authentication failed please try again later"));
     }
 });
 exports.verify = verify;
 const allowUsersOnDashboard = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    res.status(200).json({
-        error: false,
-        message: "Authorized successfully",
-        data: req.user,
-    });
+    res
+        .status(200)
+        .json(authResponseCreator(false, "Authorized successfully", req.user));
 });
 exports.allowUsersOnDashboard = allowUsersOnDashboard;
