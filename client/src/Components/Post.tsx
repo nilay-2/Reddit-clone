@@ -4,9 +4,15 @@ const Post: React.FC = () => {
   return (
     <div className="max-w-4xl h-auto rounded-lg mx-auto hover:bg-reddit bg-redditPost hover:border hover:border-opacity-5 hover:border-stone-500 flex">
       <div
-        className="votes w-24 rounded-s-lg"
+        className="votes w-24 rounded-s-lg md:flex hidden flex-col items-center pt-4"
         style={{ backgroundColor: "#151515" }}
-      ></div>
+      >
+        <div className="btn-vote-group flex flex-col gap-2">
+          <i className="bi bi-hand-thumbs-up hover:text-red-600 cursor-pointer text-xl text-slate-300"></i>
+          <div className="text-sm">133</div>
+          <i className="bi bi-hand-thumbs-down hover:text-red-600 cursor-pointer text-xl text-slate-300"></i>
+        </div>
+      </div>
       <div className="posts-content md:p-3 p-1">
         <div className="post-author-details flex justify-between">
           <div className="flex gap-1 items-center text-slate-400 text-sm">
@@ -33,7 +39,7 @@ const Post: React.FC = () => {
           </p>
         </div>
         <div className="btn-group flex gap-4 mt-6 items-center">
-          <div className="vote-grp flex gap-1 bg-stone-800 rounded-full px-2">
+          <div className="vote-grp flex gap-1 bg-stone-800 rounded-full px-2 md:hidden">
             <div className="flex gap-1 items-center p-2">
               <button className="rounded-full">
                 <i className="bi bi-hand-thumbs-up hover:text-red-600"></i>
