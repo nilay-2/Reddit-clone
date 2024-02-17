@@ -2,13 +2,10 @@ import React from "react";
 
 const Post: React.FC = () => {
   return (
-    <div
-      className="max-w-4xl h-auto mx-auto rounded-md hover:bg-reddit flex"
-      style={{ backgroundColor: "#1A1A1B" }}
-    >
+    <div className="max-w-4xl h-auto rounded-lg mx-auto hover:bg-reddit bg-redditPost hover:border hover:border-opacity-5 hover:border-stone-500 flex">
       <div
-        className="votes border border-red-500 w-24"
-        // style={{ backgroundColor: "#151515" }}
+        className="votes w-24 rounded-s-lg"
+        style={{ backgroundColor: "#151515" }}
       ></div>
       <div className="posts-content md:p-3 p-1">
         <div className="post-author-details flex justify-between">

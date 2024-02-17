@@ -5,6 +5,7 @@ module.exports = {
     extend: {
       backgroundColor: {
         reddit: "#28282B",
+        redditPost: "#1A1A1B",
       },
     },
   },

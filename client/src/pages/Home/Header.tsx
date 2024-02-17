@@ -41,7 +41,7 @@ const Header: React.FC = () => {
 
   return (
     <div
-      className="w-screen h-screen mx-auto p-2 z-0"
+      className="w-screen h-screen mx-auto p-2 z-0 bg-stone-950"
       style={{ maxWidth: "2000px" }}
     >
       <div className="mx-auto" style={{ maxWidth: "1400px" }}>
