@@ -7,7 +7,7 @@ import reportWebVitals from "./reportWebVitals";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { Provider } from "react-redux";
 import { store } from "./app/store";
-import CreatePost from "./pages/Home/CreatePost";
+import CreatePost from "./pages/Post/CreatePost";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Protect from "./Components/Protect";

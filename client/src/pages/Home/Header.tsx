@@ -45,7 +45,7 @@ const Header: React.FC = () => {
       style={{ maxWidth: "2000px" }}
     >
       <div className="mx-auto" style={{ maxWidth: "1400px" }}>
-        <header className="flex lg:gap-14 gap-3 justify-between p-1 items-center border-b border-b-slate-800 md:static sticky top-0">
+        <header className="flex lg:gap-14 gap-3 justify-between p-1 items-center md:static sticky top-0">
           {/* logo */}
           <Link to={"/"}>
             <div className="logo">
@@ -74,7 +74,7 @@ const Header: React.FC = () => {
             <IsLoggedIn />
           </div>
         </header>
-        <main>
+        <main className="mt-2">
           <Outlet />
         </main>
       </div>
