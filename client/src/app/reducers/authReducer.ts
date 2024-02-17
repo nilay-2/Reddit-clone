@@ -1,4 +1,4 @@
-import { PayloadAction, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { Credentials } from "../../pages/Home/Auth";
 import { toast } from "react-toastify";
 
@@ -20,7 +20,7 @@ const initialState: Auth = {
   username: "",
   email: "",
   photo: null,
-  loading: false,
+  loading: true,
 };
 
 const authSlice = createSlice({
@@ -31,50 +31,25 @@ const authSlice = createSlice({
     builder.addCase(verify.pending, (state) => {
       state.loading = true;
     });
-    builder.addCase(verify.fulfilled, (state, action) => {
-      if (!action.payload) return state;
-      const { data } = action.payload;
-      if (data) {
-        return {
-          ...state,
-          id: data.id,
-          username: data.username,
-          email: data.email,
-          photo: data.photo,
-          loading: false,
-        };
-      }
+    builder.addCase(verify.fulfilled, (state, action: PayloadAction<Auth>) => {
       return {
         ...state,
+        ...action.payload,
         loading: false,
       };
     });
 
-    builder.addCase(login.fulfilled, (state, action) => {
-      if (!action.payload) return state;
-      const { data } = action.payload;
-      if (data) {
-        return {
-          ...state,
-          id: data.id,
-          username: data.username,
-          email: data.email,
-          photo: data.photo,
-        };
-      }
+    builder.addCase(login.fulfilled, (state, action: PayloadAction<Auth>) => {
+      return {
+        ...state,
+        ...action.payload,
+      };
     });
-    builder.addCase(signup.fulfilled, (state, action) => {
-      if (!action.payload) return state;
-      const { data } = action.payload;
-      if (data) {
-        return {
-          ...state,
-          id: data.id,
-          username: data.username,
-          email: data.email,
-          photo: data.photo,
-        };
-      }
+    builder.addCase(signup.fulfilled, (state, action: PayloadAction<Auth>) => {
+      return {
+        ...state,
+        ...action.payload,
+      };
     });
   },
 });
@@ -91,9 +66,11 @@ export const verify = createAsyncThunk("auth/verify", async () => {
     });
 
     const jsonRes = await res.json();
-    return jsonRes;
+    console.log(jsonRes);
+    return jsonRes.data;
   } catch (error) {
     console.log(error);
+    return initialState;
   }
 });
 
@@ -117,10 +94,10 @@ export const login = createAsyncThunk(
       } else {
         toast.success(jsonRes.message, toastOpts);
       }
-      return jsonRes;
+      return jsonRes.data;
     } catch (error) {
-      console.log("something went wrong");
       console.log(error);
+      return initialState;
     }
   }
 );
@@ -144,9 +121,10 @@ export const signup = createAsyncThunk(
       } else {
         toast.success(jsonResponse.message, toastOpts);
       }
-      return jsonResponse;
+      return jsonResponse.data;
     } catch (error) {
       console.log(error);
+      return initialState;
     }
   }
 );

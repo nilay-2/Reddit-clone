@@ -69,25 +69,25 @@ export const signUp = async (req: Request, res: Response) => {
     const { email, password, username } = req.body;
 
     // check if user already exists
-    const user = (
+    const user: User = (
       await client.query(
         "select id, username, email, photo from users where email = $1",
         [email]
       )
-    ).rows[0] as User;
+    ).rows[0];
 
     if (user) {
       return res
         .status(409)
-        .json(authResponseCreator(true, "You already have an account.", user));
+        .json(authResponseCreator(true, "You already have an account."));
     }
     // if user does not exist then create new user, create jwt token and pass it in cookies
-    const newUser = (
+    const newUser: User = (
       await client.query(
         "Insert into users (email, username, password) values ($1, $2, $3) returning id, email, username, photo",
         [email, username, password]
       )
-    ).rows[0] as User;
+    ).rows[0];
 
     const token = generateToken(email, username, password);
 
@@ -111,9 +111,9 @@ export const signUp = async (req: Request, res: Response) => {
 export const logIn = async (req: Request, res: Response) => {
   try {
     const { email, password } = req.body;
-    const user = (
+    const user: User = (
       await client.query("select * from users where email = $1", [email])
-    ).rows[0] as User;
+    ).rows[0];
 
     // check if users exists
     if (!user) {
@@ -167,12 +167,12 @@ export const verify = async (
 
     const decoded = jwt.verify(token, JWT_SECRET) as { email?: string };
 
-    const user = (
+    const user: User = (
       await client.query(
         "select id, username, email, photo from users where email = $1",
         [decoded.email]
       )
-    ).rows[0] as User;
+    ).rows[0];
 
     req.user = user;
     next();
