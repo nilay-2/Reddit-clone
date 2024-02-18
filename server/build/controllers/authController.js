@@ -43,7 +43,7 @@ const signUp = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         if (user) {
             return res
                 .status(409)
-                .json(authResponseCreator(true, "You already have an account.", user));
+                .json(authResponseCreator(true, "You already have an account."));
         }
         // if user does not exist then create new user, create jwt token and pass it in cookies
         const newUser = (yield db_1.default.query("Insert into users (email, username, password) values ($1, $2, $3) returning id, email, username, photo", [email, username, password])).rows[0];

@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.createPost = void 0;
+exports.getPosts = exports.createPost = void 0;
 const db_1 = __importDefault(require("../db"));
 const postsResponseCreator = (error, message, data = null) => {
     return { error: error, message: message, data: data };
@@ -32,3 +32,18 @@ const createPost = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
     }
 });
 exports.createPost = createPost;
+const getPosts = (_, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const posts = (yield db_1.default.query("select p.*, u.username from posts p join users u on p.authorid = u.id order by p.createdat desc")).rows;
+        res
+            .status(200)
+            .json(postsResponseCreator(false, "Posts retreived successfully", posts));
+    }
+    catch (error) {
+        console.log(error);
+        res
+            .status(400)
+            .json(postsResponseCreator(true, "Something went wrong!", []));
+    }
+});
+exports.getPosts = getPosts;
