@@ -9,6 +9,6 @@ export const getFetchUrl = (): string => {
 };
 
 export const getAccessControlAllowOriginUrl = (): string => {
-  if (process.env.NODE_ENV === "production") return prodFrontendUrl;
+  if (process.env.NODE_ENV === "production") return "*";
   return devFrontendUrl;
 };
