@@ -32,5 +32,6 @@ app.use("/api/auth", authRouter);
 app.use("/api/posts", postsRouter);
 
 app.listen(port, () => {
+  console.log(`Enviroment ${process.env.NODE_ENV}`);
   console.log(`App running on port ${port}`);
 });

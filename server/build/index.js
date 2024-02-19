@@ -26,5 +26,6 @@ app.get("/", (req, res) => {
 app.use("/api/auth", authRouter_1.default);
 app.use("/api/posts", postsRouter_1.default);
 app.listen(port, () => {
+    console.log(`Enviroment ${process.env.NODE_ENV}`);
     console.log(`App running on port ${port}`);
 });

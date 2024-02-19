@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef, useState, useEffect } from "react";
 import { Post } from "../app/reducers/postsReducer";
 import * as DOMPurify from "dompurify";
 import "../css/style.css";
@@ -6,6 +6,30 @@ const PostElement: React.FC<{ post: Post }> = ({ post }) => {
   const sanitizeHTMLBody = () => ({
     __html: DOMPurify.sanitize(post.htmlbody),
   });
+
+  // ref to check if the div overflows with content
+  const textOverflowRef = useRef<HTMLDivElement>(null);
+
+  const Overlap: React.FC = () => {
+    const [isOverflowing, setIsOverflowing] = useState<Boolean>(false);
+    useEffect(() => {
+      const checkOverflow = () => {
+        if (textOverflowRef.current) {
+          const isOverflowingVertically =
+            textOverflowRef.current.scrollHeight >
+            textOverflowRef.current.clientHeight;
+          if (isOverflowingVertically) setIsOverflowing(true);
+        }
+      };
+
+      checkOverflow();
+    }, []);
+    if (!isOverflowing) return <></>;
+    return (
+      <div className="overlap h-20 absolute left-0 bottom-0 right-0 bg-gradient-to-t from-[#141416cc] to-transparent"></div>
+    );
+  };
+
   return (
     <div className="w-full max-w-4xl h-auto rounded-lg mx-auto hover:bg-reddit bg-redditPost hover:border hover:border-opacity-5 hover:border-stone-500 flex">
       <div
@@ -31,7 +55,12 @@ const PostElement: React.FC<{ post: Post }> = ({ post }) => {
             </button>
           </div>
         </div>
-        <div className="text-content">
+        <div
+          className="text-content overflow-hidden h-auto relative"
+          style={{ maxHeight: "400px" }}
+          ref={textOverflowRef}
+        >
+          <Overlap />
           <p className="title mt-2 text-xl font-semibold">{post.title}</p>
           <div
             className="content mt-2 text-base text-slate-300 tiptap"

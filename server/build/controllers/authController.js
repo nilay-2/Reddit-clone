@@ -81,7 +81,7 @@ const logIn = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const token = generateToken(user.email, user.username, user.password);
         user.password = "";
         return res
-            .cookie("jwt", token)
+            .cookie("jwt", token, cookieOptions)
             .status(200)
             .json(authResponseCreator(false, "Log in successful", user));
     }
