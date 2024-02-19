@@ -18,19 +18,12 @@ app.use(cookieParser());
 
 app.use(
   cors({
-    origin: [prodFrontendUrl, devFrontendUrl],
+    origin:
+      process.env.NODE_ENV === "production" ? prodFrontendUrl : devFrontendUrl,
     methods: ["GET", "POST", "PATCH", "DELETE"],
     credentials: true,
   })
 );
-
-app.use((req: Request, res: Response, next: NextFunction) => {
-  res.setHeader(
-    "Access-Control-Allow-Origin",
-    process.env.NODE_ENV === "production" ? prodFrontendUrl : devFrontendUrl
-  );
-  next();
-});
 
 app.get("/", (req: Request, res: Response) => {
   res.send("Welcome to reddit-clone server✨");

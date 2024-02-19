@@ -17,14 +17,10 @@ const app = (0, express_1.default)();
 app.use(express_1.default.json());
 app.use((0, cookie_parser_1.default)());
 app.use((0, cors_1.default)({
-    origin: [appUrl_1.prodFrontendUrl, appUrl_1.devFrontendUrl],
+    origin: process.env.NODE_ENV === "production" ? appUrl_1.prodFrontendUrl : appUrl_1.devFrontendUrl,
     methods: ["GET", "POST", "PATCH", "DELETE"],
     credentials: true,
 }));
-app.use((req, res, next) => {
-    res.setHeader("Access-Control-Allow-Origin", process.env.NODE_ENV === "production" ? appUrl_1.prodFrontendUrl : appUrl_1.devFrontendUrl);
-    next();
-});
 app.get("/", (req, res) => {
     res.send("Welcome to reddit-clone server✨");
 });
