@@ -18,8 +18,7 @@ app.use(cookieParser());
 
 app.use(
   cors({
-    origin:
-      process.env.NODE_ENV === "production" ? prodFrontendUrl : devFrontendUrl,
+    origin: [prodFrontendUrl, devFrontendUrl],
     methods: ["GET", "POST", "PATCH", "DELETE"],
     credentials: true,
   })
