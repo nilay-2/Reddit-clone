@@ -1,4 +1,4 @@
-import express, { Express, Request, Response } from "express";
+import express, { Express, NextFunction, Request, Response } from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import { devFrontendUrl, prodFrontendUrl } from "./utils/appUrl";
@@ -24,6 +24,14 @@ app.use(
     credentials: true,
   })
 );
+
+app.use((req: Request, res: Response, next: NextFunction) => {
+  res.setHeader(
+    "Access-Control-Allow-Origin",
+    process.env.NODE_ENV === "production" ? prodFrontendUrl : devFrontendUrl
+  );
+  next();
+});
 
 app.get("/", (req: Request, res: Response) => {
   res.send("Welcome to reddit-clone server✨");
