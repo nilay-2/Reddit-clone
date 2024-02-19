@@ -1,7 +1,10 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import { toast } from "react-toastify";
 import { toastOpts } from "./authReducer";
-import { devBackendUrl, prodBackendUrl } from "../../utils/appUrl";
+import {
+  getFetchUrl,
+  getAccessControlAllowOriginUrl,
+} from "../../utils/appUrl";
 export interface Post {
   id: string;
   createdAt: string;
@@ -51,12 +54,11 @@ const postsReducer = createSlice({
 
 export const fetchPosts = createAsyncThunk("posts/fetchPosts", async () => {
   try {
-    const url =
-      process.env.NODE_ENV === "production" ? prodBackendUrl : devBackendUrl;
-    const res = await fetch(`${url}/api/posts/`, {
+    const res = await fetch(`${getFetchUrl()}/api/posts/`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
+        "Access-Control-Allow-Origin": getAccessControlAllowOriginUrl(),
       },
     });
 

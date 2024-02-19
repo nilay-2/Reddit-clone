@@ -15,6 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.allowUsersOnDashboard = exports.verify = exports.logIn = exports.signUp = void 0;
 const db_1 = __importDefault(require("../db"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
+const appUrl_1 = require("../utils/appUrl");
 const dotenv_1 = __importDefault(require("dotenv"));
 dotenv_1.default.config();
 const JWT_SECRET = process.env.JWT_SECRET;
@@ -24,9 +25,9 @@ const authResponseCreator = (error, message, data = null) => {
 };
 const cookieOptions = {
     httpOnly: true,
-    secure: false,
+    secure: process.env.NODE_ENV === "production" ? true : false,
     path: "/",
-    domain: "localhost",
+    domain: process.env.NODE_ENV === "production" ? appUrl_1.prodDomain : appUrl_1.localDomain,
     expires: new Date(Date.now() + COOKIE_EXPIRY * 24 * 60 * 60 * 1000),
 };
 const generateToken = (email, username, password) => {

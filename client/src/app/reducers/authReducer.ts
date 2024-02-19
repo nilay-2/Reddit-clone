@@ -1,7 +1,10 @@
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { Credentials } from "../../pages/Home/Auth";
 import { toast } from "react-toastify";
-import { devBackendUrl, prodBackendUrl } from "../../utils/appUrl";
+import {
+  getFetchUrl,
+  getAccessControlAllowOriginUrl,
+} from "../../utils/appUrl";
 export const toastOpts = {
   theme: "dark",
   autoClose: 3000,
@@ -57,13 +60,12 @@ const authSlice = createSlice({
 // async actions
 export const verify = createAsyncThunk("auth/verify", async () => {
   try {
-    const url =
-      process.env.NODE_ENV === "production" ? prodBackendUrl : devBackendUrl;
-    const res = await fetch(`${url}/api/auth/verify`, {
+    const res = await fetch(`${getFetchUrl()}/api/auth/verify`, {
       method: "GET",
       credentials: "include",
       headers: {
         "Content-Type": "application/json",
+        "Access-Control-Allow-Origin": getAccessControlAllowOriginUrl(),
       },
     });
 
@@ -80,12 +82,11 @@ export const login = createAsyncThunk(
   "auth/login",
   async (cred: Credentials) => {
     try {
-      const url =
-        process.env.NODE_ENV === "production" ? prodBackendUrl : devBackendUrl;
-      const res = await fetch(`${url}/api/auth/login`, {
+      const res = await fetch(`${getFetchUrl()}/api/auth/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          "Access-Control-Allow-Origin": getAccessControlAllowOriginUrl(),
         },
         credentials: "include",
         body: JSON.stringify(cred),
@@ -110,12 +111,11 @@ export const signup = createAsyncThunk(
   "auth/signup",
   async (cred: Credentials) => {
     try {
-      const url =
-        process.env.NODE_ENV === "production" ? prodBackendUrl : devBackendUrl;
-      const res = await fetch(`${url}/api/auth/signup`, {
+      const res = await fetch(`${getFetchUrl()}/api/auth/signup`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          "Access-Control-Allow-Origin": getAccessControlAllowOriginUrl(),
         },
         credentials: "include",
         body: JSON.stringify(cred),

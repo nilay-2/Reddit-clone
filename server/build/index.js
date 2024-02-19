@@ -6,6 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const cors_1 = __importDefault(require("cors"));
 const cookie_parser_1 = __importDefault(require("cookie-parser"));
+const appUrl_1 = require("./utils/appUrl");
 // routers
 const authRouter_1 = __importDefault(require("./routes/authRouter"));
 const postsRouter_1 = __importDefault(require("./routes/postsRouter"));
@@ -16,7 +17,7 @@ const app = (0, express_1.default)();
 app.use(express_1.default.json());
 app.use((0, cookie_parser_1.default)());
 app.use((0, cors_1.default)({
-    origin: "http://localhost:3000",
+    origin: process.env.NODE_ENV === "production" ? appUrl_1.prodFrontendUrl : appUrl_1.devFrontendUrl,
     methods: ["GET", "POST", "PATCH", "DELETE"],
     credentials: true,
 }));
