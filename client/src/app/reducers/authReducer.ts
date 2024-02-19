@@ -1,7 +1,7 @@
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { Credentials } from "../../pages/Home/Auth";
 import { toast } from "react-toastify";
-
+import { devBackendUrl, prodBackendUrl } from "../../utils/appUrl";
 export const toastOpts = {
   theme: "dark",
   autoClose: 3000,
@@ -57,7 +57,9 @@ const authSlice = createSlice({
 // async actions
 export const verify = createAsyncThunk("auth/verify", async () => {
   try {
-    const res = await fetch("http://localhost:5000/api/auth/verify", {
+    const url =
+      process.env.NODE_ENV === "production" ? prodBackendUrl : devBackendUrl;
+    const res = await fetch(`${url}/api/auth/verify`, {
       method: "GET",
       credentials: "include",
       headers: {
@@ -78,7 +80,9 @@ export const login = createAsyncThunk(
   "auth/login",
   async (cred: Credentials) => {
     try {
-      const res = await fetch("http://localhost:5000/api/auth/login", {
+      const url =
+        process.env.NODE_ENV === "production" ? prodBackendUrl : devBackendUrl;
+      const res = await fetch(`${url}/api/auth/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -106,7 +110,9 @@ export const signup = createAsyncThunk(
   "auth/signup",
   async (cred: Credentials) => {
     try {
-      const res = await fetch("http://localhost:5000/api/auth/signup", {
+      const url =
+        process.env.NODE_ENV === "production" ? prodBackendUrl : devBackendUrl;
+      const res = await fetch(`${url}/api/auth/signup`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

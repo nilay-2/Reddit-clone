@@ -2,6 +2,7 @@ import { Response, Request, NextFunction } from "express";
 import client from "../db";
 import { ServiceResponse } from "../utils/ResponseInterface";
 import jwt from "jsonwebtoken";
+import { localDomain, prodDomain } from "../utils/appUrl";
 import dotenv from "dotenv";
 dotenv.config();
 
@@ -47,9 +48,9 @@ interface CookieOpts {
 
 const cookieOptions: CookieOpts = {
   httpOnly: true,
-  secure: false,
+  secure: process.env.NODE_ENV === "production" ? true : false,
   path: "/",
-  domain: "localhost",
+  domain: process.env.NODE_ENV === "production" ? prodDomain : localDomain,
   expires: new Date(Date.now() + COOKIE_EXPIRY * 24 * 60 * 60 * 1000),
 };
 

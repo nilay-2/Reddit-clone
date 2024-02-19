@@ -10,6 +10,8 @@ import { RootState, AppDispatch } from "../app/store";
 import { useSelector } from "react-redux";
 import { toast } from "react-toastify";
 import { toastOpts } from "../app/reducers/authReducer";
+import { devBackendUrl, prodBackendUrl } from "../utils/appUrl";
+
 interface PostData {
   createdAt: number;
   authorId: string;
@@ -90,7 +92,9 @@ const Editor: React.FC = () => {
 
   const submitPostData = async (postData: PostData) => {
     try {
-      const res = await fetch("http://localhost:5000/api/posts/createpost", {
+      const url =
+        process.env.NODE_ENV === "production" ? prodBackendUrl : devBackendUrl;
+      const res = await fetch(`${url}/api/posts/createpost`, {
         method: "POST",
         credentials: "include",
         headers: {

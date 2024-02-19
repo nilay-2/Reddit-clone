@@ -1,7 +1,7 @@
 import express, { Express, Request, Response } from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
-
+import { devFrontendUrl, prodFrontendUrl } from "./utils/appUrl";
 // routers
 import authRouter from "./routes/authRouter";
 import postsRouter from "./routes/postsRouter";
@@ -18,7 +18,8 @@ app.use(cookieParser());
 
 app.use(
   cors({
-    origin: "http://localhost:3000",
+    origin:
+      process.env.NODE_ENV === "production" ? prodFrontendUrl : devFrontendUrl,
     methods: ["GET", "POST", "PATCH", "DELETE"],
     credentials: true,
   })

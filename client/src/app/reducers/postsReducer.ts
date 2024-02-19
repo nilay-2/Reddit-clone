@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import { toast } from "react-toastify";
 import { toastOpts } from "./authReducer";
+import { devBackendUrl, prodBackendUrl } from "../../utils/appUrl";
 export interface Post {
   id: string;
   createdAt: string;
@@ -50,7 +51,9 @@ const postsReducer = createSlice({
 
 export const fetchPosts = createAsyncThunk("posts/fetchPosts", async () => {
   try {
-    const res = await fetch("http://localhost:5000/api/posts/", {
+    const url =
+      process.env.NODE_ENV === "production" ? prodBackendUrl : devBackendUrl;
+    const res = await fetch(`${url}/api/posts/`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
