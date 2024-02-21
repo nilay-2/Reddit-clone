@@ -42,7 +42,7 @@ interface CookieOpts {
   httpOnly: boolean;
   secure: boolean;
   path: string;
-  domain: string;
+  domain?: string;
   expires: Date;
   sameSite: boolean | "none" | "lax" | "strict" | undefined;
 }
@@ -52,7 +52,7 @@ const cookieOptions: CookieOpts = {
   httpOnly: true,
   secure: process.env.NODE_ENV === "production" ? true : false,
   path: "/",
-  domain: process.env.NODE_ENV === "production" ? prodDomain : localDomain,
+  // domain: process.env.NODE_ENV === "production" ? prodDomain : localDomain,
   expires: new Date(Date.now() + COOKIE_EXPIRY * 24 * 60 * 60 * 1000),
   sameSite: "none",
 };
