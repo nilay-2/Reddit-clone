@@ -23,7 +23,7 @@ app.use((0, cors_1.default)({
     credentials: true,
 }));
 app.get("/", (req, res) => {
-    res.send(`Welcome to reddit-clone server✨ env: ${env}`);
+    res.send(`Welcome to reddit-clone server✨ env: ${env}.`);
 });
 app.use((req, res, next) => {
     console.log(req.headers);
