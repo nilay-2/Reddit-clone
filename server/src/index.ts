@@ -29,6 +29,25 @@ app.get("/", (req: Request, res: Response) => {
   res.send("Welcome to reddit-clone server✨");
 });
 
+app.use((req: Request, res: Response, next: NextFunction) => {
+  res.setHeader("Access-Control-Allow-Credentials", "true");
+  res.setHeader(
+    "Access-Control-Allow-Origin",
+    process.env.NODE_ENV === "production" ? prodFrontendUrl : devFrontendUrl
+  );
+  // another common pattern
+  // res.setHeader('Access-Control-Allow-Origin', req.headers.origin);
+  res.setHeader(
+    "Access-Control-Allow-Methods",
+    "GET,OPTIONS,PATCH,DELETE,POST,PUT"
+  );
+  res.setHeader(
+    "Access-Control-Allow-Headers",
+    "X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version"
+  );
+  next();
+});
+
 app.use("/api/auth", authRouter);
 app.use("/api/posts", postsRouter);
 
