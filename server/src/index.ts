@@ -35,7 +35,7 @@ app.use((req: Request, res: Response, next: NextFunction) => {
   res.setHeader("Access-Control-Allow-Credentials", "true");
   res.setHeader(
     "Access-Control-Allow-Origin",
-    "https://reddit-clone-rosy-six.vercel.app"
+    env === "production" ? prodFrontendUrl : devFrontendUrl
   );
   // another common pattern
   // res.setHeader('Access-Control-Allow-Origin', req.headers.origin);
