@@ -16,10 +16,11 @@ app.use(express.json());
 
 app.use(cookieParser());
 
+const env: string = process.env.NODE_ENV as string;
+
 app.use(
   cors({
-    origin:
-      process.env.NODE_ENV === "production" ? prodFrontendUrl : devFrontendUrl,
+    origin: env === "production" ? prodFrontendUrl : devFrontendUrl,
     methods: ["GET", "POST", "PATCH", "DELETE"],
     credentials: true,
   })
@@ -30,10 +31,11 @@ app.get("/", (req: Request, res: Response) => {
 });
 
 app.use((req: Request, res: Response, next: NextFunction) => {
+  console.log(req.headers);
   res.setHeader("Access-Control-Allow-Credentials", "true");
   res.setHeader(
     "Access-Control-Allow-Origin",
-    process.env.NODE_ENV === "production" ? prodFrontendUrl : devFrontendUrl
+    "https://reddit-clone-rosy-six.vercel.app"
   );
   // another common pattern
   // res.setHeader('Access-Control-Allow-Origin', req.headers.origin);
@@ -52,6 +54,6 @@ app.use("/api/auth", authRouter);
 app.use("/api/posts", postsRouter);
 
 app.listen(port, () => {
-  console.log(`Enviroment ${process.env.NODE_ENV}`);
+  console.log(`Enviroment ${env}`);
   console.log(`App running on port ${port}`);
 });
