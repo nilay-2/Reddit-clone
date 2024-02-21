@@ -27,7 +27,7 @@ app.use(
 );
 
 app.get("/", (req: Request, res: Response) => {
-  res.send(`Welcome to reddit-clone server✨, env: ${env}`);
+  res.send(`Welcome to reddit-clone server✨ env: ${env}`);
 });
 
 app.use((req: Request, res: Response, next: NextFunction) => {
