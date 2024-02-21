@@ -23,6 +23,7 @@ const COOKIE_EXPIRY = parseInt(process.env.COOKIE_EXPIRY);
 const authResponseCreator = (error, message, data = null) => {
     return { error: error, message: message, data: data };
 };
+// cookie options
 const cookieOptions = {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production" ? true : false,

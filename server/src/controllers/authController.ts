@@ -47,6 +47,7 @@ interface CookieOpts {
   sameSite: boolean | "none" | "lax" | "strict" | undefined;
 }
 
+// cookie options
 const cookieOptions: CookieOpts = {
   httpOnly: true,
   secure: process.env.NODE_ENV === "production" ? true : false,
