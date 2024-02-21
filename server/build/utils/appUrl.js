@@ -4,4 +4,4 @@ exports.prodDomain = exports.localDomain = exports.prodFrontendUrl = exports.dev
 exports.devFrontendUrl = "http://localhost:3000";
 exports.prodFrontendUrl = "https://reddit-clone-rosy-six.vercel.app";
 exports.localDomain = "localhost";
-exports.prodDomain = "/";
+exports.prodDomain = "vercel.app";

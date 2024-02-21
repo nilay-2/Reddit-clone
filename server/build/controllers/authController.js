@@ -29,6 +29,7 @@ const cookieOptions = {
     path: "/",
     domain: process.env.NODE_ENV === "production" ? appUrl_1.prodDomain : appUrl_1.localDomain,
     expires: new Date(Date.now() + COOKIE_EXPIRY * 24 * 60 * 60 * 1000),
+    sameSite: "none",
 };
 const generateToken = (email, username, password) => {
     const token = jsonwebtoken_1.default.sign({ email, username, password }, JWT_SECRET, {

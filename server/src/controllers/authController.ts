@@ -44,6 +44,7 @@ interface CookieOpts {
   path: string;
   domain: string;
   expires: Date;
+  sameSite: boolean | "none" | "lax" | "strict" | undefined;
 }
 
 const cookieOptions: CookieOpts = {
@@ -52,6 +53,7 @@ const cookieOptions: CookieOpts = {
   path: "/",
   domain: process.env.NODE_ENV === "production" ? prodDomain : localDomain,
   expires: new Date(Date.now() + COOKIE_EXPIRY * 24 * 60 * 60 * 1000),
+  sameSite: "none",
 };
 
 const generateToken = (
