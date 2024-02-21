@@ -8,7 +8,7 @@ import postsRouter from "./routes/postsRouter";
 import dotenv from "dotenv";
 dotenv.config();
 
-const port: number = 5000;
+const port = process.env.PORT || 5000;
 
 const app: Express = express();
 
