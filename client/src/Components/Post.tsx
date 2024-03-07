@@ -105,7 +105,7 @@ const PostElement: React.FC<{ post: Post }> = ({ post }) => {
           <div className="vote-grp flex gap-1 bg-stone-800 rounded-full px-2 md:hidden">
             <div className="flex gap-1 items-center p-2">
               <button className="rounded-full" onClick={voteHandler}>
-                <i className="bi bi-hand-thumbs-up hover:text-red-600"></i>
+                <IsLiked />
               </button>
               <span className="text-xs">{post.upvotes}</span>
             </div>
