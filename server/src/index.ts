@@ -31,7 +31,7 @@ app.get("/", (req: Request, res: Response) => {
 });
 
 app.use((req: Request, res: Response, next: NextFunction) => {
-  console.log(req.headers);
+  // console.log(req.headers);
   res.setHeader("Access-Control-Allow-Credentials", "true");
   res.setHeader(
     "Access-Control-Allow-Origin",

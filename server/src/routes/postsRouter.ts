@@ -1,5 +1,5 @@
 import express from "express";
-import { createPost, getPosts } from "../controllers/postsController";
+import { createPost, getPosts, vote } from "../controllers/postsController";
 import { verify } from "../controllers/authController";
 const postsRouter: express.Router = express.Router();
 
@@ -10,5 +10,7 @@ postsRouter.route("/").get(getPosts);
 postsRouter.use(verify);
 
 postsRouter.route("/createpost").post(createPost);
+
+postsRouter.route("/vote").post(vote);
 
 export default postsRouter;

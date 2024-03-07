@@ -11,7 +11,7 @@ export const toastOpts = {
 };
 
 interface Auth {
-  id: string;
+  id: number;
   username: string;
   email: string;
   photo: string | null;
@@ -19,7 +19,7 @@ interface Auth {
 }
 
 const initialState: Auth = {
-  id: "",
+  id: 0,
   username: "",
   email: "",
   photo: null,

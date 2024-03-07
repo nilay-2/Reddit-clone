@@ -14,7 +14,7 @@ import { getFetchUrl, getAccessControlAllowOriginUrl } from "../utils/appUrl";
 
 interface PostData {
   createdAt: number;
-  authorId: string;
+  authorId: number;
   title: string;
   textBody: string;
   htmlBody: string;

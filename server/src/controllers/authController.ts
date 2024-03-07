@@ -10,12 +10,12 @@ const JWT_SECRET: string = process.env.JWT_SECRET as string;
 const COOKIE_EXPIRY: number = parseInt(process.env.COOKIE_EXPIRY as string);
 
 export interface User {
-  id: string;
+  id: number;
   email: string;
   username: string;
   password: string;
   photo?: string;
-  passwordChangedat?: string;
+  passwordChangedat?: number;
 }
 
 interface AuthResponse extends ServiceResponse {
@@ -44,7 +44,7 @@ interface CookieOpts {
   path: string;
   domain?: string;
   expires: Date;
-  sameSite: boolean | "none" | "lax" | "strict" | undefined;
+  sameSite?: boolean | "none" | "lax" | "strict" | undefined;
 }
 
 // cookie options
@@ -52,9 +52,9 @@ const cookieOptions: CookieOpts = {
   httpOnly: true,
   secure: process.env.NODE_ENV === "production" ? true : false,
   path: "/",
-  // domain: process.env.NODE_ENV === "production" ? prodDomain : localDomain,
+  // domain: process.env.NODE_ENV === "production" ? prodDomain : localDomain, // don't add 'domain' property if the frontend and backend have different domains
   expires: new Date(Date.now() + COOKIE_EXPIRY * 24 * 60 * 60 * 1000),
-  sameSite: "none",
+  sameSite: "none", // add this attribute only during deployment
 };
 
 const generateToken = (
@@ -63,7 +63,7 @@ const generateToken = (
   password: string
 ): string => {
   const token = jwt.sign({ email, username, password }, JWT_SECRET, {
-    expiresIn: "1d",
+    expiresIn: "2d",
   });
   return token;
 };

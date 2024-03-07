@@ -26,7 +26,7 @@ app.get("/", (req, res) => {
     res.send(`Welcome to reddit-clone server✨ env: ${env}.`);
 });
 app.use((req, res, next) => {
-    console.log(req.headers);
+    // console.log(req.headers);
     res.setHeader("Access-Control-Allow-Credentials", "true");
     res.setHeader("Access-Control-Allow-Origin", env === "production" ? appUrl_1.prodFrontendUrl : appUrl_1.devFrontendUrl);
     // another common pattern

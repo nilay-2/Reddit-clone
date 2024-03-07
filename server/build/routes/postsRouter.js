@@ -12,4 +12,5 @@ postsRouter.route("/").get(postsController_1.getPosts);
 // verify if user is logged in
 postsRouter.use(authController_1.verify);
 postsRouter.route("/createpost").post(postsController_1.createPost);
+postsRouter.route("/vote").post(postsController_1.vote);
 exports.default = postsRouter;

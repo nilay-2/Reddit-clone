@@ -1,12 +1,17 @@
 import React, { useRef, useState, useEffect } from "react";
-import { Post } from "../app/reducers/postsReducer";
-import * as DOMPurify from "dompurify";
+import { Post, upvote, vote } from "../app/reducers/postsReducer";
+import { AppDispatch, RootState } from "../app/store";
+import { useDispatch, useSelector } from "react-redux";
 import "../css/style.css";
-const PostElement: React.FC<{ post: Post }> = ({ post }) => {
-  const sanitizeHTMLBody = () => ({
-    __html: DOMPurify.sanitize(post.htmlbody),
-  });
+import { isPostLiked } from "../utils/isPostLiked";
+// import * as DOMPurify from "dompurify";
+// const sanitizeHTMLBody = () => ({
+//   __html: DOMPurify.sanitize(post.htmlbody),
+// });
 
+const PostElement: React.FC<{ post: Post }> = ({ post }) => {
+  const dispatch = useDispatch<AppDispatch>();
+  const authState = useSelector((state: RootState) => state.auth);
   // ref to check if the div overflows with content
   const textOverflowRef = useRef<HTMLDivElement>(null);
 
@@ -30,16 +35,45 @@ const PostElement: React.FC<{ post: Post }> = ({ post }) => {
     );
   };
 
+  const voteHandler = () => {
+    const voteObj = {
+      userid: authState.id,
+      isupvote: true,
+      postid: post.id,
+    };
+
+    dispatch(upvote(voteObj));
+    dispatch(vote(voteObj));
+  };
+
+  const IsLiked: React.FC = () => {
+    if (!isPostLiked(post.votes, authState.id))
+      return (
+        <i className="bi bi-hand-thumbs-up hover:text-red-600 cursor-pointer text-slate-300"></i>
+      );
+    else return <i className="bi bi-hand-thumbs-up-fill"></i>;
+  };
+
   return (
     <div className="w-full max-w-4xl h-auto rounded-lg mx-auto hover:bg-reddit bg-redditPost hover:border hover:border-opacity-5 hover:border-stone-500 flex">
       <div
         className="votes w-16 rounded-s-lg md:flex hidden flex-col items-center pt-4"
         style={{ backgroundColor: "#151515" }}
       >
-        <div className="btn-vote-group flex flex-col gap-2 text-center">
-          <i className="bi bi-hand-thumbs-up hover:text-red-600 cursor-pointer text-xl text-slate-300"></i>
-          <div className="text-sm">{post.upvotes}</div>
-          <i className="bi bi-hand-thumbs-down hover:text-red-600 cursor-pointer text-xl text-slate-300"></i>
+        <div className="btn-vote-group flex flex-col gap-4 text-center px-2 py-3 rounded-lg hover:bg-reddit bg-redditPost">
+          <div>
+            <div className="text-sm">{post.upvotes}</div>
+            <button onClick={voteHandler}>
+              <IsLiked />
+            </button>
+          </div>
+          <hr />
+          <div>
+            <div className="text-sm">{post.downvotes}</div>
+            <button>
+              <i className="bi bi-hand-thumbs-down hover:text-red-600 cursor-pointer text-slate-300"></i>
+            </button>
+          </div>
         </div>
       </div>
       <div className="posts-content w-full md:p-4 p-2">
@@ -70,7 +104,7 @@ const PostElement: React.FC<{ post: Post }> = ({ post }) => {
         <div className="btn-group flex gap-4 mt-6 items-center">
           <div className="vote-grp flex gap-1 bg-stone-800 rounded-full px-2 md:hidden">
             <div className="flex gap-1 items-center p-2">
-              <button className="rounded-full">
+              <button className="rounded-full" onClick={voteHandler}>
                 <i className="bi bi-hand-thumbs-up hover:text-red-600"></i>
               </button>
               <span className="text-xs">{post.upvotes}</span>

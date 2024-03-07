@@ -27,13 +27,13 @@ const cookieOptions = {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production" ? true : false,
     path: "/",
-    // domain: process.env.NODE_ENV === "production" ? prodDomain : localDomain,
+    // domain: process.env.NODE_ENV === "production" ? prodDomain : localDomain, // don't add 'domain' property if the frontend and backend have different domains
     expires: new Date(Date.now() + COOKIE_EXPIRY * 24 * 60 * 60 * 1000),
-    sameSite: "none",
+    sameSite: "none", // add this attribute only during deployment
 };
 const generateToken = (email, username, password) => {
     const token = jsonwebtoken_1.default.sign({ email, username, password }, JWT_SECRET, {
-        expiresIn: "1d",
+        expiresIn: "2d",
     });
     return token;
 };
