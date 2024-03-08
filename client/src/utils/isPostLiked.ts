@@ -1,9 +1,9 @@
 export const isPostLiked = (
-  votes: Array<{ userid: number; isupvote: boolean }>,
+  votes: Array<number>,
   currUserId: number
 ): boolean => {
   const isLiked = votes.find((vote) => {
-    return vote.userid === currUserId && vote.isupvote === true;
+    return vote === currUserId;
   });
   if (isLiked) return true;
   return false;

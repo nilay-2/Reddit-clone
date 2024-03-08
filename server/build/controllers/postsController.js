@@ -51,27 +51,21 @@ const getPosts = (_, res) => __awaiter(void 0, void 0, void 0, function* () {
 });
 exports.getPosts = getPosts;
 const vote = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a, _b;
+    var _a;
     try {
         const { postid, userid, isupvote } = req.body;
         const post = (yield db_1.default.query("select votes from posts where id = $1", [postid])).rows[0];
-        console.log(post.votes);
         const isAlreadyLiked = (_a = post.votes) === null || _a === void 0 ? void 0 : _a.find((vote) => {
-            return vote.userid === userid;
+            return vote === userid;
         });
         if (isAlreadyLiked) {
-            const filteredUsers = (_b = post.votes) === null || _b === void 0 ? void 0 : _b.filter((vote) => {
-                return vote.userid !== userid;
-            });
-            const updatedPost = (yield db_1.default.query("update posts set upvotes = upvotes - 1, votes = $1 where id = $2 returning *", [JSON.stringify(filteredUsers), postid])).rows[0];
+            const updatedPost = (yield db_1.default.query("update posts set upvotes = upvotes - 1, votes = array_remove(votes, $1) where id = $2 returning *", [userid, postid])).rows[0];
             res
                 .status(200)
                 .json(postsResponseCreator(false, "Removed a like", updatedPost));
         }
         else {
-            const updatedArr = post.votes;
-            updatedArr === null || updatedArr === void 0 ? void 0 : updatedArr.push({ userid, isupvote });
-            const updatedPost = (yield db_1.default.query("update posts set upvotes = upvotes + 1, votes = $1 where id = $2 returning *", [JSON.stringify(updatedArr), postid])).rows[0];
+            const updatedPost = (yield db_1.default.query("update posts set upvotes = upvotes + 1, votes = array_append(votes, $1) where id = $2 returning *", [userid, postid])).rows[0];
             res
                 .status(200)
                 .json(postsResponseCreator(false, "Added a like", updatedPost));

@@ -1,9 +1,4 @@
-import {
-  createSlice,
-  createAsyncThunk,
-  PayloadAction,
-  isAction,
-} from "@reduxjs/toolkit";
+import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import { toast } from "react-toastify";
 import { toastOpts } from "./authReducer";
 import {
@@ -20,7 +15,7 @@ export interface Post {
   comments: number;
   upvotes: number;
   downvotes: number;
-  votes: Array<{ userid: number; isupvote: boolean }>;
+  votes: Array<number>;
   username?: string;
 }
 
@@ -51,22 +46,22 @@ const postsReducer = createSlice({
         return post.id === postid;
       });
 
-      if (indexOfCurrPost == -1) return; // post is not present
+      if (indexOfCurrPost === -1) return; // post is not present
 
       const updatePost = state.posts[indexOfCurrPost];
 
-      const isPostLiked = updatePost.votes.find((vote) => {
-        return vote.userid === userid;
+      const isPostLiked = updatePost.votes.find((voteId) => {
+        return voteId === userid;
       });
 
       if (isPostLiked) {
-        const removeLikeArr = updatePost.votes.filter((vote) => {
-          return vote.userid !== userid;
+        const removeFromLikedArr = updatePost.votes.filter((voteId) => {
+          return voteId !== userid;
         });
-        updatePost.votes = removeLikeArr;
+        updatePost.votes = removeFromLikedArr;
         if (updatePost.upvotes) updatePost.upvotes = +updatePost.upvotes - 1;
       } else {
-        updatePost.votes.push({ userid, isupvote: true });
+        updatePost.votes.push(userid);
         updatePost.upvotes = +updatePost.upvotes + 1;
       }
     },

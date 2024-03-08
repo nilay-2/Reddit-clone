@@ -2,11 +2,6 @@ import { Request, Response } from "express";
 import client from "../db";
 import { ServiceResponse } from "../utils/ResponseInterface";
 
-interface Vote {
-  userid: number;
-  isupvote: boolean;
-}
-
 interface Post {
   createdAt: number;
   authorId: number;
@@ -16,7 +11,7 @@ interface Post {
   comments: number;
   upvotes: number;
   downvotes: number;
-  votes?: Array<Vote> | null;
+  votes?: Array<number>;
   username?: string;
 }
 
@@ -25,7 +20,7 @@ interface PostsResponse extends ServiceResponse {
 }
 
 interface VotesResponse extends ServiceResponse {
-  data: Array<Vote> | null;
+  data: Array<number> | null;
 }
 
 const postsResponseCreator = (
@@ -39,7 +34,7 @@ const postsResponseCreator = (
 const votesResponseCreator = (
   error: boolean,
   message: string,
-  data: Array<Vote> | null = null
+  data: Array<number> | null = null
 ): VotesResponse => {
   return { error: error, message: message, data: data };
 };
@@ -90,33 +85,26 @@ export const vote = async (req: Request, res: Response) => {
     const post: Post = (
       await client.query("select votes from posts where id = $1", [postid])
     ).rows[0];
-    console.log(post.votes);
 
     const isAlreadyLiked = post.votes?.find((vote) => {
-      return vote.userid === userid;
+      return vote === userid;
     });
 
     if (isAlreadyLiked) {
-      const filteredUsers = post.votes?.filter((vote) => {
-        return vote.userid !== userid;
-      });
       const updatedPost: Post = (
         await client.query(
-          "update posts set upvotes = upvotes - 1, votes = $1 where id = $2 returning *",
-          [JSON.stringify(filteredUsers), postid]
+          "update posts set upvotes = upvotes - 1, votes = array_remove(votes, $1) where id = $2 returning *",
+          [userid, postid]
         )
       ).rows[0];
       res
         .status(200)
         .json(postsResponseCreator(false, "Removed a like", updatedPost));
     } else {
-      const updatedArr = post.votes;
-      updatedArr?.push({ userid, isupvote });
-
       const updatedPost: Post = (
         await client.query(
-          "update posts set upvotes = upvotes + 1, votes = $1 where id = $2 returning *",
-          [JSON.stringify(updatedArr), postid]
+          "update posts set upvotes = upvotes + 1, votes = array_append(votes, $1) where id = $2 returning *",
+          [userid, postid]
         )
       ).rows[0];
       res

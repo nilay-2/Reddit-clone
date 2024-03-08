@@ -67,13 +67,13 @@ const PostElement: React.FC<{ post: Post }> = ({ post }) => {
               <IsLiked />
             </button>
           </div>
-          <hr />
-          <div>
+          {/* <hr /> */}
+          {/* <div>
             <div className="text-sm">{post.downvotes}</div>
             <button>
               <i className="bi bi-hand-thumbs-down hover:text-red-600 cursor-pointer text-slate-300"></i>
             </button>
-          </div>
+          </div> */}
         </div>
       </div>
       <div className="posts-content w-full md:p-4 p-2">
@@ -109,12 +109,12 @@ const PostElement: React.FC<{ post: Post }> = ({ post }) => {
               </button>
               <span className="text-xs">{post.upvotes}</span>
             </div>
-            <div className="flex gap-1 items-center p-2">
+            {/* <div className="flex gap-1 items-center p-2">
               <button className="rounded-full">
                 <i className="bi bi-hand-thumbs-down hover:text-red-600"></i>
               </button>
               <span className="text-xs">{post.downvotes}</span>
-            </div>
+            </div> */}
           </div>
           <div className="flex gap-1 items-center p-2 bg-stone-800 rounded-full px-4">
             <button className="rounded-full">
