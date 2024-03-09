@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.vote = exports.getPosts = exports.createPost = void 0;
+exports.getPostById = exports.vote = exports.getPosts = exports.createPost = void 0;
 const db_1 = __importDefault(require("../db"));
 const postsResponseCreator = (error, message, data = null) => {
     return { error: error, message: message, data: data };
@@ -77,3 +77,17 @@ const vote = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     }
 });
 exports.vote = vote;
+const getPostById = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const { postId } = req.params;
+        const post = (yield db_1.default.query("select p.*, u.username from posts p join users u on p.authorid = u.id where p.id = $1", [postId])).rows[0];
+        res
+            .status(200)
+            .json(postsResponseCreator(false, `Post received with id: ${postId}`, post));
+    }
+    catch (error) {
+        console.log(error);
+        res.status(400).json(postsResponseCreator(false, "Something went wrong"));
+    }
+});
+exports.getPostById = getPostById;

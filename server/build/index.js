@@ -10,6 +10,7 @@ const appUrl_1 = require("./utils/appUrl");
 // routers
 const authRouter_1 = __importDefault(require("./routes/authRouter"));
 const postsRouter_1 = __importDefault(require("./routes/postsRouter"));
+const commentsController_1 = __importDefault(require("./routes/commentsController"));
 const dotenv_1 = __importDefault(require("dotenv"));
 dotenv_1.default.config();
 const port = process.env.PORT || 5000;
@@ -37,6 +38,7 @@ app.use((req, res, next) => {
 });
 app.use("/api/auth", authRouter_1.default);
 app.use("/api/posts", postsRouter_1.default);
+app.use("/api/comments", commentsController_1.default);
 app.listen(port, () => {
     console.log(`Enviroment ${env}`);
     console.log(`App running on port ${port}`);

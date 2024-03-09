@@ -5,7 +5,7 @@ import { verify } from "../../app/reducers/authReducer";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../../app/store";
 import UserProfileBar from "../../Components/UserProfileBar";
-
+import { fetchPosts } from "../../app/reducers/postsReducer";
 const Header: React.FC = () => {
   // toggle state
   const [openAuth, setOpenAuth] = useState<Boolean>(false);
@@ -17,6 +17,10 @@ const Header: React.FC = () => {
   const authHandler = () => {
     setOpenAuth(true);
   };
+
+  useEffect(() => {
+    dispatch(fetchPosts());
+  }, []);
 
   useEffect(() => {
     dispatch(verify());
@@ -41,7 +45,7 @@ const Header: React.FC = () => {
 
   return (
     <div
-      className="w-screen h-screen mx-auto p-2 z-0"
+      className="w-screen h-screen mx-auto p-2 z-0 overflow-x-hidden"
       style={{ maxWidth: "2000px" }}
     >
       <div className="mx-auto" style={{ maxWidth: "1400px" }}>

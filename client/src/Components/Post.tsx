@@ -4,16 +4,22 @@ import { AppDispatch, RootState } from "../app/store";
 import { useDispatch, useSelector } from "react-redux";
 import "../css/style.css";
 import { isPostLiked } from "../utils/isPostLiked";
+import { useNavigate } from "react-router-dom";
 // import * as DOMPurify from "dompurify";
 // const sanitizeHTMLBody = () => ({
 //   __html: DOMPurify.sanitize(post.htmlbody),
 // });
 
-const PostElement: React.FC<{ post: Post }> = ({ post }) => {
+const PostElement: React.FC<{
+  post: Post;
+  overview?: boolean;
+}> = ({ post, overview = false }) => {
   const dispatch = useDispatch<AppDispatch>();
   const authState = useSelector((state: RootState) => state.auth);
   // ref to check if the div overflows with content
   const textOverflowRef = useRef<HTMLDivElement>(null);
+
+  const navigate = useNavigate();
 
   const Overlap: React.FC = () => {
     const [isOverflowing, setIsOverflowing] = useState<Boolean>(false);
@@ -55,7 +61,13 @@ const PostElement: React.FC<{ post: Post }> = ({ post }) => {
   };
 
   return (
-    <div className="w-full max-w-4xl h-auto rounded-lg mx-auto hover:bg-reddit bg-redditPost hover:border hover:border-opacity-5 hover:border-stone-500 flex">
+    <div
+      className={`w-full max-w-4xl h-auto rounded-lg mx-auto bg-redditPost ${
+        overview
+          ? "hover:bg-reddit  hover:border hover:border-opacity-5 hover:border-stone-500 cursor-pointer"
+          : ""
+      }  flex `}
+    >
       <div
         className="votes w-16 rounded-s-lg md:flex hidden flex-col items-center pt-4"
         style={{ backgroundColor: "#151515" }}
@@ -76,7 +88,14 @@ const PostElement: React.FC<{ post: Post }> = ({ post }) => {
           </div> */}
         </div>
       </div>
-      <div className="posts-content w-full md:p-4 p-2">
+      <div
+        className="posts-content w-full md:p-4 p-2"
+        onClick={() => {
+          if (overview) {
+            navigate(`posts/${post.id}`);
+          }
+        }}
+      >
         <div className="post-author-details flex justify-between">
           <div className="flex gap-1 items-center text-slate-400 text-sm">
             <i className="bi bi-person-circle text-2xl mr-2"></i>
@@ -91,10 +110,10 @@ const PostElement: React.FC<{ post: Post }> = ({ post }) => {
         </div>
         <div
           className="text-content overflow-hidden h-auto relative"
-          style={{ maxHeight: "400px" }}
+          style={{ maxHeight: `${overview ? "400px" : "100%"}` }}
           ref={textOverflowRef}
         >
-          <Overlap />
+          {overview && <Overlap />}
           <p className="title mt-2 text-xl font-semibold">{post.title}</p>
           <div
             className="content mt-2 text-base text-slate-300 tiptap"
@@ -111,7 +130,7 @@ const PostElement: React.FC<{ post: Post }> = ({ post }) => {
             </div>
             {/* <div className="flex gap-1 items-center p-2">
               <button className="rounded-full">
-                <i className="bi bi-hand-thumbs-down hover:text-red-600"></i>
+              <i className="bi bi-hand-thumbs-down hover:text-red-600"></i>
               </button>
               <span className="text-xs">{post.downvotes}</span>
             </div> */}

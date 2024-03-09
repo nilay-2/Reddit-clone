@@ -21,6 +21,7 @@ export interface Post {
 
 interface PostState {
   posts: Array<Post>;
+  selectedPost: Post | null;
   isLoading: boolean;
 }
 
@@ -32,6 +33,7 @@ export interface Vote {
 
 const initialState: PostState = {
   posts: [],
+  selectedPost: null,
   isLoading: true,
 };
 
@@ -58,12 +60,28 @@ const postsReducer = createSlice({
         const removeFromLikedArr = updatePost.votes.filter((voteId) => {
           return voteId !== userid;
         });
+        if (updatePost.upvotes) {
+          updatePost.upvotes = +updatePost.upvotes - 1;
+        }
         updatePost.votes = removeFromLikedArr;
-        if (updatePost.upvotes) updatePost.upvotes = +updatePost.upvotes - 1;
+        if (state.selectedPost) {
+          state.selectedPost.upvotes = +state.selectedPost.upvotes - 1;
+          state.selectedPost.votes = removeFromLikedArr;
+        }
       } else {
-        updatePost.votes.push(userid);
         updatePost.upvotes = +updatePost.upvotes + 1;
+        updatePost.votes.push(userid);
+        if (state.selectedPost) {
+          state.selectedPost.upvotes = +state.selectedPost.upvotes + 1;
+          state.selectedPost.votes.push(userid);
+        }
       }
+    },
+    removeSelectedPost: (state) => {
+      return {
+        ...state,
+        selectedPost: null,
+      };
     },
   },
   extraReducers(builder) {
@@ -83,16 +101,15 @@ const postsReducer = createSlice({
         };
       }
     );
-    builder.addCase(vote.fulfilled, (state, action: PayloadAction<Post>) => {
-      const { id, votes, upvotes } = action.payload;
-      const currPost = state.posts.find((post) => {
-        return (post.id = id);
-      });
-      if (currPost && currPost.votes) {
-        currPost.votes = votes;
-        currPost.upvotes = upvotes;
+    builder.addCase(
+      getPostById.fulfilled,
+      (state, action: PayloadAction<Post>) => {
+        return {
+          ...state,
+          selectedPost: action.payload,
+        };
       }
-    });
+    );
   },
 });
 
@@ -130,12 +147,39 @@ export const vote = createAsyncThunk("posts/vote", async (vote: Vote) => {
       body: JSON.stringify(vote),
     });
     const jsonRes = await res.json();
+    if (jsonRes.error) {
+      toast.error(jsonRes.message, toastOpts);
+    }
     return jsonRes.data;
   } catch (error) {
     console.log(error);
   }
 });
 
-export const { upvote } = postsReducer.actions;
+export const getPostById = createAsyncThunk(
+  "posts/getPostById",
+  async (postId: string) => {
+    try {
+      const res = await fetch(`${getFetchUrl()}/api/posts/${postId}`, {
+        method: "GET",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+          "Access-Control-Allow-Origin": getAccessControlAllowOriginUrl(),
+        },
+      });
+      const jsonRes = await res.json();
+      if (jsonRes.error) {
+        toast.error(jsonRes.message, toastOpts);
+      }
+      return jsonRes.data;
+    } catch (error) {
+      console.log(error);
+      return initialState;
+    }
+  }
+);
+
+export const { upvote, removeSelectedPost } = postsReducer.actions;
 
 export default postsReducer.reducer;

@@ -13,4 +13,5 @@ postsRouter.route("/").get(postsController_1.getPosts);
 postsRouter.use(authController_1.verify);
 postsRouter.route("/createpost").post(postsController_1.createPost);
 postsRouter.route("/vote").post(postsController_1.vote);
+postsRouter.route("/:postId").get(postsController_1.getPostById);
 exports.default = postsRouter;

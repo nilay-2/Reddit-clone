@@ -11,6 +11,7 @@ import CreatePost from "./pages/Post/CreatePost";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Protect from "./Components/Protect";
+import PostDetail from "./pages/Post/PostDetail";
 // routes
 const router = createBrowserRouter([
   {
@@ -24,6 +25,10 @@ const router = createBrowserRouter([
       {
         path: "submit",
         element: <Protect children={<CreatePost />} />,
+      },
+      {
+        path: "posts/:postId",
+        element: <PostDetail />,
       },
     ],
   },

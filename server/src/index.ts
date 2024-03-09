@@ -5,6 +5,7 @@ import { devFrontendUrl, prodFrontendUrl } from "./utils/appUrl";
 // routers
 import authRouter from "./routes/authRouter";
 import postsRouter from "./routes/postsRouter";
+import commentsRouter from "./routes/commentsController";
 import dotenv from "dotenv";
 dotenv.config();
 
@@ -52,6 +53,7 @@ app.use((req: Request, res: Response, next: NextFunction) => {
 
 app.use("/api/auth", authRouter);
 app.use("/api/posts", postsRouter);
+app.use("/api/comments", commentsRouter);
 
 app.listen(port, () => {
   console.log(`Enviroment ${env}`);

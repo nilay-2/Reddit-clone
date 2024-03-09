@@ -6,12 +6,6 @@ import { AppDispatch } from "../../app/store";
 import { useDispatch } from "react-redux";
 import { fetchPosts } from "../../app/reducers/postsReducer";
 function App() {
-  const dispatch = useDispatch<AppDispatch>();
-
-  useEffect(() => {
-    dispatch(fetchPosts());
-  }, []);
-
   return (
     <div
       className="max-w-5xl mx-auto text-white flex gap-3 justify-between md:p-0 p-1"

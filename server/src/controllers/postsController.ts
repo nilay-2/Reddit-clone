@@ -116,3 +116,25 @@ export const vote = async (req: Request, res: Response) => {
     res.status(400).json(votesResponseCreator(true, "Something went wrong"));
   }
 };
+
+export const getPostById = async (req: Request, res: Response) => {
+  try {
+    const { postId } = req.params;
+
+    const post: Post = (
+      await client.query(
+        "select p.*, u.username from posts p join users u on p.authorid = u.id where p.id = $1",
+        [postId]
+      )
+    ).rows[0];
+
+    res
+      .status(200)
+      .json(
+        postsResponseCreator(false, `Post received with id: ${postId}`, post)
+      );
+  } catch (error) {
+    console.log(error);
+    res.status(400).json(postsResponseCreator(false, "Something went wrong"));
+  }
+};
