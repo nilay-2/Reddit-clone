@@ -85,7 +85,7 @@ export const createComment = createAsyncThunk(
       if (jsonRes.error) {
         toast.error(jsonRes.message, toastOpts);
       }
-      return jsonRes.data;
+      return { ...jsonRes.data, username: commentObj.username };
     } catch (error) {
       console.log(error);
     }

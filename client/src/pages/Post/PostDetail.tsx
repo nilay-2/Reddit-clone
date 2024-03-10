@@ -95,6 +95,7 @@ const PostDetail: React.FC = () => {
                       postid: postState.selectedPost?.id,
                       content: comment,
                       replyto: null,
+                      username: authState.username,
                     })
                   );
                   setComment("");
