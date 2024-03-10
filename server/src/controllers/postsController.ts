@@ -45,7 +45,7 @@ export const createPost = async (req: Request, res: Response) => {
 
     const post: Post = (
       await client.query(
-        "insert into posts (createdat, authorid, title, htmlbody, textbody) values ($1, $2, $3, $4, $5) returning id, createdat, authorid, title, htmlbody, comments, upvotes, downvotes",
+        "insert into posts (createdat, authorid, title, htmlbody, textbody) values ($1, $2, $3, $4, $5) returning id, createdat, authorid, title, htmlbody, comments, upvotes",
         [createdAt, authorId, title, htmlBody, textBody]
       )
     ).rows[0];
