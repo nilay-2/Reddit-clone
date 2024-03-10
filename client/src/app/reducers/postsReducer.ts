@@ -7,14 +7,13 @@ import {
 } from "../../utils/appUrl";
 export interface Post {
   id: number;
-  createdAt: number;
-  authorId: number;
+  createdat: number;
+  authorid: number;
   title: string;
   htmlbody: string;
   textbody: string;
   comments: number;
   upvotes: number;
-  downvotes: number;
   votes: Array<number>;
   username?: string;
 }
@@ -28,7 +27,6 @@ interface PostState {
 export interface Vote {
   userid: number;
   postid: number;
-  isupvote: boolean;
 }
 
 const initialState: PostState = {

@@ -5,6 +5,7 @@ import { useDispatch, useSelector } from "react-redux";
 import "../css/style.css";
 import { isPostLiked } from "../utils/isPostLiked";
 import { useNavigate } from "react-router-dom";
+import formatTimeAgo from "../utils/timeFormat";
 // import * as DOMPurify from "dompurify";
 // const sanitizeHTMLBody = () => ({
 //   __html: DOMPurify.sanitize(post.htmlbody),
@@ -44,7 +45,6 @@ const PostElement: React.FC<{
   const voteHandler = () => {
     const voteObj = {
       userid: authState.id,
-      isupvote: true,
       postid: post.id,
     };
 
@@ -97,9 +97,10 @@ const PostElement: React.FC<{
         }}
       >
         <div className="post-author-details flex justify-between">
-          <div className="flex gap-1 items-center text-slate-400 text-sm">
-            <i className="bi bi-person-circle text-2xl mr-2"></i>
-            <p>{`u/${post.username}`}</p>
+          <div className="flex gap-2 items-center text-slate-400">
+            <i className="bi bi-person-circle text-2xl"></i>
+            <span>{`u/${post.username}`}</span>
+            <span className="text-xs">{formatTimeAgo(post.createdat)}</span>
           </div>
 
           <div className="h-fit max-h-4">

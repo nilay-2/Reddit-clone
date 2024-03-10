@@ -5,7 +5,7 @@ import { devFrontendUrl, prodFrontendUrl } from "./utils/appUrl";
 // routers
 import authRouter from "./routes/authRouter";
 import postsRouter from "./routes/postsRouter";
-import commentsRouter from "./routes/commentsController";
+import commentsRouter from "./routes/commentsRouter";
 import dotenv from "dotenv";
 dotenv.config();
 
@@ -56,6 +56,6 @@ app.use("/api/posts", postsRouter);
 app.use("/api/comments", commentsRouter);
 
 app.listen(port, () => {
-  console.log(`Enviroment ${env}`);
+  console.log(`Enviroment: ${env}`);
   console.log(`App running on port ${port}`);
 });

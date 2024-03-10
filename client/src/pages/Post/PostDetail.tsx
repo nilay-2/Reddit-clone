@@ -7,12 +7,10 @@ import {
   getPostById,
   removeSelectedPost,
 } from "../../app/reducers/postsReducer";
+import { reset } from "../../app/reducers/commentsReducer";
 import TextareaAutosize from "react-textarea-autosize";
-import {
-  getAccessControlAllowOriginUrl,
-  getFetchUrl,
-} from "../../utils/appUrl";
-
+import { createComment } from "../../app/reducers/commentsReducer";
+import CommentsContainer from "../../Components/CommentsContainer";
 const PostDetail: React.FC = () => {
   const { postId } = useParams();
 
@@ -31,32 +29,6 @@ const PostDetail: React.FC = () => {
     HTMLTextAreaElement
   > = (e) => {
     setComment(e.target.value);
-  };
-
-  const createComment = async () => {
-    try {
-      const res = await fetch(
-        `${getFetchUrl()}/api/comments/post/${postId}/comment`,
-        {
-          method: "POST",
-          credentials: "include",
-          headers: {
-            "Content-Type": "application/json",
-            "Access-Control-Allow-Origin": getAccessControlAllowOriginUrl(),
-          },
-          body: JSON.stringify({
-            userid: authState.id,
-            replyto: null,
-            content: comment,
-            createdat: Date.now(),
-          }),
-        }
-      );
-      const jsonRes = await res.json();
-      console.log(jsonRes);
-    } catch (error) {
-      console.log(error);
-    }
   };
 
   if (!postState.selectedPost) {
@@ -82,6 +54,7 @@ const PostDetail: React.FC = () => {
       <button
         onClick={() => {
           dispatch(removeSelectedPost());
+          dispatch(reset());
           navigate("/");
         }}
       >
@@ -115,7 +88,17 @@ const PostDetail: React.FC = () => {
               } hover:bg-blue-500 active:bg-blue-600`}
               disabled={comment ? false : true}
               onClick={() => {
-                createComment();
+                if (postState.selectedPost) {
+                  dispatch(
+                    createComment({
+                      userid: authState.id,
+                      postid: postState.selectedPost?.id,
+                      content: comment,
+                      replyto: null,
+                    })
+                  );
+                  setComment("");
+                }
               }}
             >
               Comment
@@ -123,6 +106,7 @@ const PostDetail: React.FC = () => {
           </div>
         </div>
       </div>
+      <CommentsContainer postId={postState.selectedPost.id} />
     </div>
   );
 };

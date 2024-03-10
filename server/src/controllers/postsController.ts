@@ -10,7 +10,6 @@ interface Post {
   textBody: string;
   comments: number;
   upvotes: number;
-  downvotes: number;
   votes?: Array<number>;
   username?: string;
 }

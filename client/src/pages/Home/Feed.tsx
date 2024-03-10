@@ -11,7 +11,7 @@ const Feed: React.FC = () => {
     // Restore scroll position when component mounts
     if (scrollRef.current) {
       const storedPosition = sessionStorage.getItem("scroll");
-      console.log(storedPosition);
+      // console.log(storedPosition);
       const parsedPosition = storedPosition ? parseInt(storedPosition, 10) : 0;
       scrollRef.current.scrollTop = parsedPosition;
     }

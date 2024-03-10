@@ -29,7 +29,7 @@ const cookieOptions = {
     path: "/",
     // domain: process.env.NODE_ENV === "production" ? prodDomain : localDomain, // don't add 'domain' property if the frontend and backend have different domains
     expires: new Date(Date.now() + COOKIE_EXPIRY * 24 * 60 * 60 * 1000),
-    sameSite: "none", // add this attribute only during deployment
+    // sameSite: "none", // add this attribute only during deployment
 };
 const generateToken = (email, username, password) => {
     const token = jsonwebtoken_1.default.sign({ email, username, password }, JWT_SECRET, {
