@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getAllComments = exports.createComment = void 0;
+exports.deleteComment = exports.getAllComments = exports.createComment = void 0;
 const db_1 = __importDefault(require("../db"));
 const commentsResponseCreator = (error, message, data = null) => {
     return { error: error, message: message, data: data };
@@ -41,7 +41,7 @@ exports.createComment = createComment;
 const getAllComments = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { postId } = req.params;
-        const comments = (yield db_1.default.query("select c.*, u.username from comments c join users u on c.userid = u.id where c.postid = $1 order by createdat desc", [postId])).rows;
+        const comments = (yield db_1.default.query("select c.*, u.username from comments c join users u on c.userid = u.id where c.postid = $1 order by createdat asc", [postId])).rows;
         res
             .status(200)
             .json(commentsResponseCreator(false, `Comments received for postId: ${postId}`, comments));
@@ -52,3 +52,25 @@ const getAllComments = (req, res) => __awaiter(void 0, void 0, void 0, function*
     }
 });
 exports.getAllComments = getAllComments;
+const deleteComment = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const { commentId, postId } = req.params;
+        const { replyTo } = req.body;
+        yield db_1.default.query("BEGIN");
+        yield db_1.default.query("delete from comments where id = $1", [commentId]);
+        if (replyTo) {
+            yield db_1.default.query("update comments set replies = replies - 1 where id = $1", [replyTo]);
+        }
+        yield db_1.default.query("update posts set comments = comments - 1 where id = $1", [postId]);
+        yield db_1.default.query("COMMIT");
+        res
+            .status(200)
+            .json(commentsResponseCreator(false, "Comment delete successfully"));
+    }
+    catch (error) {
+        yield db_1.default.query("ROLLBACK");
+        console.log(error);
+        res.status(400).json(commentsResponseCreator(true, "Something went wrong"));
+    }
+});
+exports.deleteComment = deleteComment;

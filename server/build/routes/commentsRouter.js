@@ -11,4 +11,5 @@ commentsRouter
     .route("/post/:postId/comment")
     .post(commentsController_1.createComment)
     .get(commentsController_1.getAllComments);
+commentsRouter.route("/post/:postId/comment/:commentId").delete(commentsController_1.deleteComment);
 exports.default = commentsRouter;

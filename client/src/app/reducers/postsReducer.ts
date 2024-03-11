@@ -81,6 +81,16 @@ const postsReducer = createSlice({
         selectedPost: null,
       };
     },
+    decrementCommentCounter: (state) => {
+      if (state.selectedPost) {
+        state.selectedPost.comments -= 1;
+      }
+    },
+    incrementCommentCounter: (state) => {
+      if (state.selectedPost) {
+        state.selectedPost.comments = +state.selectedPost.comments + 1;
+      }
+    },
   },
   extraReducers(builder) {
     builder.addCase(fetchPosts.pending, (state) => {
@@ -178,6 +188,11 @@ export const getPostById = createAsyncThunk(
   }
 );
 
-export const { upvote, removeSelectedPost } = postsReducer.actions;
+export const {
+  upvote,
+  removeSelectedPost,
+  decrementCommentCounter,
+  incrementCommentCounter,
+} = postsReducer.actions;
 
 export default postsReducer.reducer;

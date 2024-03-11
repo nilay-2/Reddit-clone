@@ -66,7 +66,7 @@ export const getAllComments = async (req: Request, res: Response) => {
     const { postId } = req.params;
     const comments: Array<Comment> = (
       await client.query(
-        "select c.*, u.username from comments c join users u on c.userid = u.id where c.postid = $1 order by createdat desc",
+        "select c.*, u.username from comments c join users u on c.userid = u.id where c.postid = $1 order by createdat asc",
         [postId]
       )
     ).rows;
@@ -81,6 +81,33 @@ export const getAllComments = async (req: Request, res: Response) => {
         )
       );
   } catch (error) {
+    console.log(error);
+    res.status(400).json(commentsResponseCreator(true, "Something went wrong"));
+  }
+};
+
+export const deleteComment = async (req: Request, res: Response) => {
+  try {
+    const { commentId, postId } = req.params;
+    const { replyTo } = req.body;
+    await client.query("BEGIN");
+    await client.query("delete from comments where id = $1", [commentId]);
+    if (replyTo) {
+      await client.query(
+        "update comments set replies = replies - 1 where id = $1",
+        [replyTo]
+      );
+    }
+    await client.query(
+      "update posts set comments = comments - 1 where id = $1",
+      [postId]
+    );
+    await client.query("COMMIT");
+    res
+      .status(200)
+      .json(commentsResponseCreator(false, "Comment delete successfully"));
+  } catch (error) {
+    await client.query("ROLLBACK");
     console.log(error);
     res.status(400).json(commentsResponseCreator(true, "Something went wrong"));
   }

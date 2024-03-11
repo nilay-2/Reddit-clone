@@ -5,6 +5,10 @@ import {
   getFetchUrl,
   getAccessControlAllowOriginUrl,
 } from "../../utils/appUrl";
+import {
+  decrementCommentCounter,
+  incrementCommentCounter,
+} from "./postsReducer";
 
 export interface Comment {
   id?: number;
@@ -43,7 +47,7 @@ const commentsReducer = createSlice({
     builder.addCase(
       createComment.fulfilled,
       (state, action: PayloadAction<Comment>) => {
-        state.comments.unshift(action.payload);
+        state.comments.push(action.payload);
       }
     );
     builder.addCase(
@@ -56,12 +60,15 @@ const commentsReducer = createSlice({
         };
       }
     );
+    builder.addCase(deleteComment.fulfilled, (state) => {
+      return state;
+    });
   },
 });
 
 export const createComment = createAsyncThunk(
   "comments/createComment",
-  async (commentObj: Comment) => {
+  async (commentObj: Comment, { dispatch }) => {
     try {
       const res = await fetch(
         `${getFetchUrl()}/api/comments/post/${commentObj.postid}/comment`,
@@ -85,6 +92,7 @@ export const createComment = createAsyncThunk(
       if (jsonRes.error) {
         toast.error(jsonRes.message, toastOpts);
       }
+      dispatch(incrementCommentCounter());
       return { ...jsonRes.data, username: commentObj.username };
     } catch (error) {
       console.log(error);
@@ -114,6 +122,48 @@ export const getAllComments = createAsyncThunk(
         toast.error(jsonRes.message, toastOpts);
       }
       return jsonRes.data;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+);
+
+export const deleteComment = createAsyncThunk(
+  "comments/deleteComment",
+  async (
+    {
+      postId,
+      replyTo,
+      commentId,
+    }: {
+      postId: number;
+      replyTo: number | null;
+      commentId: number;
+    },
+    { dispatch }
+  ) => {
+    try {
+      const res = await fetch(
+        `${getFetchUrl()}/api/comments/post/${postId}/comment/${commentId}`,
+        {
+          method: "DELETE",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+            "Access-Control-Allow-Origin": getAccessControlAllowOriginUrl(),
+          },
+          body: JSON.stringify({ replyTo }),
+        }
+      );
+      const jsonRes = await res.json();
+      console.log(jsonRes);
+      if (jsonRes.error) {
+        toast.error(jsonRes.message, toastOpts);
+        return;
+      }
+      dispatch(decrementCommentCounter());
+      toast.success(jsonRes.message, toastOpts);
+      return;
     } catch (error) {
       console.log(error);
     }
