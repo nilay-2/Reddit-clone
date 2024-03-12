@@ -13,12 +13,13 @@ import {
 export interface Comment {
   id?: number;
   postid: number;
-  userid: number;
+  userid?: number;
   replyto: number | null;
   content: string;
   createdat?: number;
   replies?: number;
   username?: string;
+  replymsg?: Array<any>;
 }
 
 interface CommentState {
@@ -60,9 +61,20 @@ const commentsReducer = createSlice({
         };
       }
     );
-    builder.addCase(deleteComment.fulfilled, (state) => {
-      return state;
-    });
+    builder.addCase(
+      deleteComment.fulfilled,
+      (state, action: PayloadAction<Comment>) => {
+        if (action.payload) {
+          const filteredComments = state.comments.filter((comment) => {
+            return comment.id !== action.payload.id;
+          });
+          return {
+            ...state,
+            comments: filteredComments,
+          };
+        }
+      }
+    );
   },
 });
 
@@ -159,9 +171,44 @@ export const deleteComment = createAsyncThunk(
       console.log(jsonRes);
       if (jsonRes.error) {
         toast.error(jsonRes.message, toastOpts);
-        return;
+        return jsonRes.data;
       }
       dispatch(decrementCommentCounter());
+      toast.success(jsonRes.message, toastOpts);
+      return jsonRes.data;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+);
+
+export const createReply = createAsyncThunk(
+  "comments/createReply",
+  async (replyToObj: Comment) => {
+    try {
+      const res = await fetch(
+        `${getFetchUrl()}/api/comments/post/${replyToObj.postid}/comment/${
+          replyToObj.replyto
+        }/reply`,
+        {
+          method: "POST",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+            "Access-Control-Allow-Origin": getAccessControlAllowOriginUrl(),
+          },
+          body: JSON.stringify({
+            content: replyToObj.content,
+            createdAt: Date.now(),
+          }),
+        }
+      );
+      const jsonRes = await res.json();
+      console.log(jsonRes);
+      if (jsonRes.error) {
+        toast.error(jsonRes.message, toastOpts);
+        return;
+      }
       toast.success(jsonRes.message, toastOpts);
       return;
     } catch (error) {

@@ -31,7 +31,7 @@ const createPost = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
     }
     catch (error) {
         console.log(error);
-        res.status(400).json(postsResponseCreator(true, "Please try again later"));
+        res.status(400).json(postsResponseCreator(true, error.message));
     }
 });
 exports.createPost = createPost;
@@ -46,7 +46,7 @@ const getPosts = (_, res) => __awaiter(void 0, void 0, void 0, function* () {
         console.log(error);
         res
             .status(400)
-            .json(postsResponseCreator(true, "Something went wrong!", []));
+            .json(postsResponseCreator(true, error.message, []));
     }
 });
 exports.getPosts = getPosts;
@@ -73,7 +73,7 @@ const vote = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     }
     catch (error) {
         console.log(error);
-        res.status(400).json(votesResponseCreator(true, "Something went wrong"));
+        res.status(400).json(votesResponseCreator(true, error.message));
     }
 });
 exports.vote = vote;
@@ -87,7 +87,7 @@ const getPostById = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
     }
     catch (error) {
         console.log(error);
-        res.status(400).json(postsResponseCreator(false, "Something went wrong"));
+        res.status(400).json(postsResponseCreator(false, error.message));
     }
 });
 exports.getPostById = getPostById;

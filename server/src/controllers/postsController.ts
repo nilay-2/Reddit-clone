@@ -56,7 +56,7 @@ export const createPost = async (req: Request, res: Response) => {
   } catch (error) {
     console.log(error);
 
-    res.status(400).json(postsResponseCreator(true, "Please try again later"));
+    res.status(400).json(postsResponseCreator(true, (error as Error).message));
   }
 };
 
@@ -74,7 +74,7 @@ export const getPosts = async (_: Request, res: Response) => {
     console.log(error);
     res
       .status(400)
-      .json(postsResponseCreator(true, "Something went wrong!", []));
+      .json(postsResponseCreator(true, (error as Error).message, []));
   }
 };
 
@@ -112,7 +112,7 @@ export const vote = async (req: Request, res: Response) => {
     }
   } catch (error) {
     console.log(error);
-    res.status(400).json(votesResponseCreator(true, "Something went wrong"));
+    res.status(400).json(votesResponseCreator(true, (error as Error).message));
   }
 };
 
@@ -134,6 +134,6 @@ export const getPostById = async (req: Request, res: Response) => {
       );
   } catch (error) {
     console.log(error);
-    res.status(400).json(postsResponseCreator(false, "Something went wrong"));
+    res.status(400).json(postsResponseCreator(false, (error as Error).message));
   }
 };

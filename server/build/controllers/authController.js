@@ -29,7 +29,13 @@ const cookieOptions = {
     path: "/",
     // domain: process.env.NODE_ENV === "production" ? prodDomain : localDomain, // don't add 'domain' property if the frontend and backend have different domains
     expires: new Date(Date.now() + COOKIE_EXPIRY * 24 * 60 * 60 * 1000),
-    sameSite: "none", // add this attribute only during deployment
+    // sameSite: "none", // add this attribute only during deployment
+};
+const getCookieOpts = () => {
+    if (process.env.NODE_ENV === "development")
+        return cookieOptions;
+    const cookieConfigOpts = Object.assign(Object.assign({}, cookieOptions), { sameSite: "none" });
+    return cookieConfigOpts;
 };
 const generateToken = (email, username, password) => {
     const token = jsonwebtoken_1.default.sign({ email, username, password }, JWT_SECRET, {
@@ -50,16 +56,17 @@ const signUp = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         // if user does not exist then create new user, create jwt token and pass it in cookies
         const newUser = (yield db_1.default.query("Insert into users (email, username, password) values ($1, $2, $3) returning id, email, username, photo", [email, username, password])).rows[0];
         const token = generateToken(email, username, password);
+        if (process.env.NODE_ENV === "production") {
+            cookieOptions.sameSite = "none";
+        }
         return res
-            .cookie("jwt", token, cookieOptions)
+            .cookie("jwt", token, getCookieOpts())
             .status(201)
             .json(authResponseCreator(false, "Registerd successfully", newUser));
     }
     catch (error) {
         console.log(error);
-        res
-            .status(400)
-            .json(authResponseCreator(true, "Authentication failed please try again later"));
+        res.status(400).json(authResponseCreator(true, error.message));
     }
 });
 exports.signUp = signUp;
@@ -83,14 +90,14 @@ const logIn = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const token = generateToken(user.email, user.username, user.password);
         user.password = "";
         return res
-            .cookie("jwt", token, cookieOptions)
+            .cookie("jwt", token, getCookieOpts())
             .status(200)
             .json(authResponseCreator(false, "Log in successful", user));
     }
     catch (error) {
         return res
             .json(400)
-            .json(authResponseCreator(true, "Authentication failed please try again later"));
+            .json(authResponseCreator(true, error.message));
     }
 });
 exports.logIn = logIn;
@@ -109,7 +116,7 @@ const verify = (req, res, next) => __awaiter(void 0, void 0, void 0, function* (
     catch (error) {
         return res
             .status(400)
-            .json(authResponseCreator(true, "Authentication failed please try again later"));
+            .json(authResponseCreator(true, error.message));
     }
 });
 exports.verify = verify;

@@ -1,14 +1,14 @@
-import React from "react";
+import React, { useState } from "react";
 import formatTimeAgo from "../utils/timeFormat";
 import { Comment, deleteComment } from "../app/reducers/commentsReducer";
 import { AppDispatch, RootState } from "../app/store";
 import { useDispatch, useSelector } from "react-redux";
-import { toast } from "react-toastify";
-import { toastOpts } from "../app/reducers/authReducer";
+import InputBox from "./InputBox";
 const CommentItem: React.FC<{ comment: Comment }> = ({ comment }) => {
   const dispatch = useDispatch<AppDispatch>();
   const authState = useSelector((state: RootState) => state.auth);
   const postState = useSelector((state: RootState) => state.posts);
+  const [openInput, setOpenInput] = useState(false);
 
   const deleteCommentHandler = async () => {
     if (!comment.id || !postState.selectedPost?.id) return;
@@ -37,7 +37,11 @@ const CommentItem: React.FC<{ comment: Comment }> = ({ comment }) => {
         <div className="content text-sm text-gray-300">{comment.content}</div>
       </div>
       <div className="btn-group flex gap-3 text-sm">
-        <button>
+        <button
+          onClick={() => {
+            setOpenInput(!openInput);
+          }}
+        >
           <i className="bi bi-reply-fill"></i>
         </button>
         {comment.userid === authState.id && (
@@ -51,6 +55,11 @@ const CommentItem: React.FC<{ comment: Comment }> = ({ comment }) => {
           </button>
           <span className="text-xs">{comment.replies}</span>
         </div>
+      </div>
+      <div className="reply-box">
+        {openInput && comment.id && (
+          <InputBox typeOfMsg="reply" replyToCommentId={comment.id} />
+        )}
       </div>
     </div>
   );

@@ -54,7 +54,14 @@ const cookieOptions: CookieOpts = {
   path: "/",
   // domain: process.env.NODE_ENV === "production" ? prodDomain : localDomain, // don't add 'domain' property if the frontend and backend have different domains
   expires: new Date(Date.now() + COOKIE_EXPIRY * 24 * 60 * 60 * 1000),
-  sameSite: "none", // add this attribute only during deployment
+  // sameSite: "none", // add this attribute only during deployment
+};
+
+const getCookieOpts = (): CookieOpts => {
+  if (process.env.NODE_ENV === "development") return cookieOptions;
+
+  const cookieConfigOpts: CookieOpts = { ...cookieOptions, sameSite: "none" };
+  return cookieConfigOpts;
 };
 
 const generateToken = (
@@ -95,20 +102,17 @@ export const signUp = async (req: Request, res: Response) => {
 
     const token = generateToken(email, username, password);
 
+    if (process.env.NODE_ENV === "production") {
+      cookieOptions.sameSite = "none";
+    }
+
     return res
-      .cookie("jwt", token, cookieOptions)
+      .cookie("jwt", token, getCookieOpts())
       .status(201)
       .json(authResponseCreator(false, "Registerd successfully", newUser));
   } catch (error) {
     console.log(error);
-    res
-      .status(400)
-      .json(
-        authResponseCreator(
-          true,
-          "Authentication failed please try again later"
-        )
-      );
+    res.status(400).json(authResponseCreator(true, (error as Error).message));
   }
 };
 
@@ -142,18 +146,13 @@ export const logIn = async (req: Request, res: Response) => {
     user.password = "";
 
     return res
-      .cookie("jwt", token, cookieOptions)
+      .cookie("jwt", token, getCookieOpts())
       .status(200)
       .json(authResponseCreator(false, "Log in successful", user));
   } catch (error) {
     return res
       .json(400)
-      .json(
-        authResponseCreator(
-          true,
-          "Authentication failed please try again later"
-        )
-      );
+      .json(authResponseCreator(true, (error as Error).message));
   }
 };
 
@@ -183,12 +182,7 @@ export const verify = async (
   } catch (error) {
     return res
       .status(400)
-      .json(
-        authResponseCreator(
-          true,
-          "Authentication failed please try again later"
-        )
-      );
+      .json(authResponseCreator(true, (error as Error).message));
   }
 };
 

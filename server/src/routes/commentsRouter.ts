@@ -4,10 +4,11 @@ import {
   createComment,
   getAllComments,
   deleteComment,
+  createReply,
 } from "../controllers/commentsController";
 const commentsRouter: express.Router = express.Router();
 
-// commentsRouter.use(verify);
+commentsRouter.use(verify);
 
 commentsRouter
   .route("/post/:postId/comment")
@@ -15,5 +16,9 @@ commentsRouter
   .get(getAllComments);
 
 commentsRouter.route("/post/:postId/comment/:commentId").delete(deleteComment);
+
+commentsRouter
+  .route("/post/:postId/comment/:commentId/reply")
+  .post(createReply);
 
 export default commentsRouter;
