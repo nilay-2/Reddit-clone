@@ -5,6 +5,7 @@ import {
   getAllComments,
   deleteComment,
   createReply,
+  getReply,
 } from "../controllers/commentsController";
 const commentsRouter: express.Router = express.Router();
 
@@ -20,5 +21,7 @@ commentsRouter.route("/post/:postId/comment/:commentId").delete(deleteComment);
 commentsRouter
   .route("/post/:postId/comment/:commentId/reply")
   .post(createReply);
+
+commentsRouter.route("/replies/:commentId").get(getReply);
 
 export default commentsRouter;

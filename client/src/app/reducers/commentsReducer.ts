@@ -5,6 +5,7 @@ import {
   getFetchUrl,
   getAccessControlAllowOriginUrl,
 } from "../../utils/appUrl";
+import { findCommentById } from "../../utils/findCurrentComment";
 import {
   decrementCommentCounter,
   incrementCommentCounter,
@@ -19,7 +20,7 @@ export interface Comment {
   createdat?: number;
   replies?: number;
   username?: string;
-  replymsg?: Array<any>;
+  replymsg?: Array<Comment>;
 }
 
 interface CommentState {
@@ -64,14 +65,55 @@ const commentsReducer = createSlice({
     builder.addCase(
       deleteComment.fulfilled,
       (state, action: PayloadAction<Comment>) => {
-        if (action.payload) {
+        if (action.payload && action.payload.id) {
           const filteredComments = state.comments.filter((comment) => {
             return comment.id !== action.payload.id;
           });
+          const parentComment = findCommentById(
+            state.comments,
+            action.payload.id
+          );
+          if (parentComment && parentComment.replies) {
+            parentComment.replies = +parentComment.replies - 1;
+          }
           return {
             ...state,
             comments: filteredComments,
           };
+        }
+      }
+    );
+    builder.addCase(
+      createReply.fulfilled,
+      (state, action: PayloadAction<Comment>) => {
+        if (action.payload && action.payload.replyto) {
+          const parentComment = findCommentById(
+            state.comments,
+            action.payload.replyto
+          );
+          console.log(parentComment);
+          if (parentComment && parentComment.replies) {
+            parentComment.replies = +parentComment.replies + 1;
+            parentComment.replymsg?.push(action.payload);
+          }
+        }
+      }
+    );
+    builder.addCase(
+      getReplies.fulfilled,
+      (state, action: PayloadAction<Array<Comment>>) => {
+        if (
+          action.payload &&
+          action.payload.length > 0 &&
+          action.payload[0].replyto
+        ) {
+          const parentComment = findCommentById(
+            state.comments,
+            action.payload[0].replyto
+          );
+          if (parentComment) {
+            parentComment.replymsg = action.payload;
+          }
         }
       }
     );
@@ -184,7 +226,7 @@ export const deleteComment = createAsyncThunk(
 
 export const createReply = createAsyncThunk(
   "comments/createReply",
-  async (replyToObj: Comment) => {
+  async (replyToObj: Comment, { dispatch }) => {
     try {
       const res = await fetch(
         `${getFetchUrl()}/api/comments/post/${replyToObj.postid}/comment/${
@@ -209,8 +251,37 @@ export const createReply = createAsyncThunk(
         toast.error(jsonRes.message, toastOpts);
         return;
       }
+      dispatch(incrementCommentCounter());
       toast.success(jsonRes.message, toastOpts);
-      return;
+      return jsonRes.data;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+);
+
+export const getReplies = createAsyncThunk(
+  "comments/getReplies",
+  async (commentId: number) => {
+    try {
+      const res = await fetch(
+        `${getFetchUrl()}/api/comments/replies/${commentId}`,
+        {
+          method: "GET",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+            "Access-Control-Allow-Origin": getAccessControlAllowOriginUrl(),
+          },
+        }
+      );
+      const jsonRes = await res.json();
+      console.log(jsonRes);
+      if (jsonRes.error) {
+        toast.error(jsonRes.message, toastOpts);
+        return;
+      }
+      return jsonRes.data;
     } catch (error) {
       console.log(error);
     }

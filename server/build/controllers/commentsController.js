@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.createReply = exports.deleteComment = exports.getAllComments = exports.createComment = void 0;
+exports.getReply = exports.createReply = exports.deleteComment = exports.getAllComments = exports.createComment = void 0;
 const db_1 = __importDefault(require("../db"));
 const commentsResponseCreator = (error, message, data = null) => {
     return { error: error, message: message, data: data };
@@ -62,9 +62,6 @@ const deleteComment = (req, res) => __awaiter(void 0, void 0, void 0, function* 
         const deletedComment = (yield db_1.default.query("delete from comments where id = $1 returning id", [
             commentId,
         ])).rows[0];
-        if (replyTo) {
-            yield db_1.default.query("update comments set replies = replies - 1 where id = $1", [replyTo]);
-        }
         yield db_1.default.query("update posts set comments = comments - 1 where id = $1", [postId]);
         yield db_1.default.query("COMMIT");
         res
@@ -100,3 +97,21 @@ const createReply = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
     }
 });
 exports.createReply = createReply;
+const getReply = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const { commentId } = req.params;
+        const replies = (yield db_1.default.query("select * from comments where replyto = $1", [
+            commentId,
+        ])).rows;
+        res
+            .status(200)
+            .json(commentsResponseCreator(false, "Replies received", replies));
+    }
+    catch (error) {
+        console.log(error);
+        res
+            .status(400)
+            .json(commentsResponseCreator(true, error.message));
+    }
+});
+exports.getReply = getReply;

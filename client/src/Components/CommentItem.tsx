@@ -1,9 +1,14 @@
 import React, { useState } from "react";
 import formatTimeAgo from "../utils/timeFormat";
-import { Comment, deleteComment } from "../app/reducers/commentsReducer";
+import {
+  Comment,
+  deleteComment,
+  getReplies,
+} from "../app/reducers/commentsReducer";
 import { AppDispatch, RootState } from "../app/store";
 import { useDispatch, useSelector } from "react-redux";
 import InputBox from "./InputBox";
+import ReplyList from "./ReplyList";
 const CommentItem: React.FC<{ comment: Comment }> = ({ comment }) => {
   const dispatch = useDispatch<AppDispatch>();
   const authState = useSelector((state: RootState) => state.auth);
@@ -15,13 +20,15 @@ const CommentItem: React.FC<{ comment: Comment }> = ({ comment }) => {
 
     if (comment.userid !== authState.id) return;
 
-    dispatch(
-      deleteComment({
-        postId: postState.selectedPost?.id,
-        replyTo: comment.replyto,
-        commentId: comment.id,
-      })
-    );
+    if (!comment.replyto) {
+      dispatch(
+        deleteComment({
+          postId: postState.selectedPost?.id,
+          replyTo: comment.replyto,
+          commentId: comment.id,
+        })
+      );
+    }
   };
 
   return (
@@ -50,7 +57,14 @@ const CommentItem: React.FC<{ comment: Comment }> = ({ comment }) => {
           </button>
         )}
         <div className="flex gap-2 items-center bg-stone-800 rounded-full py-1 px-2">
-          <button className="rounded-full">
+          <button
+            className="rounded-full"
+            onClick={() => {
+              if (comment.id) {
+                dispatch(getReplies(comment.id));
+              }
+            }}
+          >
             <i className="bi bi-chat-square hover:text-red-600"></i>
           </button>
           <span className="text-xs">{comment.replies}</span>
@@ -58,8 +72,15 @@ const CommentItem: React.FC<{ comment: Comment }> = ({ comment }) => {
       </div>
       <div className="reply-box">
         {openInput && comment.id && (
-          <InputBox typeOfMsg="reply" replyToCommentId={comment.id} />
+          <InputBox
+            typeOfMsg="reply"
+            replyToCommentId={comment.id}
+            setOpenInput={setOpenInput}
+          />
         )}
+      </div>
+      <div className="reply-container">
+        <ReplyList comment={comment} />
       </div>
     </div>
   );

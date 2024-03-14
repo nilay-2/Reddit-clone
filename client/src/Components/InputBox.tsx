@@ -6,7 +6,8 @@ import { createComment, createReply } from "../app/reducers/commentsReducer";
 const InputBox: React.FC<{
   typeOfMsg: string;
   replyToCommentId: number | null;
-}> = ({ typeOfMsg, replyToCommentId = null }) => {
+  setOpenInput?: React.Dispatch<React.SetStateAction<boolean>>;
+}> = ({ typeOfMsg, replyToCommentId = null, setOpenInput }) => {
   const [comment, setComment] = useState("");
 
   const dispatch = useDispatch<AppDispatch>();
@@ -41,7 +42,10 @@ const InputBox: React.FC<{
               typeOfMsg === "reply" ? "" : "bg-red-600"
             } text-white hover:bg-red-500 active:bg-red-600`}
             onClick={() => {
-              setComment("");
+              if (setOpenInput) {
+                setComment("");
+                setOpenInput(false);
+              }
             }}
           >
             cancel

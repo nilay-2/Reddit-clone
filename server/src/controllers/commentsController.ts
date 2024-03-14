@@ -10,7 +10,7 @@ interface Comment {
   replyto: number | null;
   createdat: number;
   replies: number;
-  replymsg: Array<any>;
+  replymsg: Array<Comment>;
 }
 
 interface CommentResponse extends ServiceResponse {
@@ -99,12 +99,7 @@ export const deleteComment = async (req: Request, res: Response) => {
         commentId,
       ])
     ).rows[0];
-    if (replyTo) {
-      await client.query(
-        "update comments set replies = replies - 1 where id = $1",
-        [replyTo]
-      );
-    }
+
     await client.query(
       "update posts set comments = comments - 1 where id = $1",
       [postId]
@@ -155,6 +150,25 @@ export const createReply = async (req: Request, res: Response) => {
     res.status(200).json(commentsResponseCreator(false, "Reply added", reply));
   } catch (error) {
     await client.query("ROLLBACK");
+    console.log(error);
+    res
+      .status(400)
+      .json(commentsResponseCreator(true, (error as Error).message));
+  }
+};
+
+export const getReply = async (req: Request, res: Response) => {
+  try {
+    const { commentId } = req.params;
+    const replies: Array<Comment> = (
+      await client.query("select * from comments where replyto = $1", [
+        commentId,
+      ])
+    ).rows;
+    res
+      .status(200)
+      .json(commentsResponseCreator(false, "Replies received", replies));
+  } catch (error) {
     console.log(error);
     res
       .status(400)
