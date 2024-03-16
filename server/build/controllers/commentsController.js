@@ -100,9 +100,7 @@ exports.createReply = createReply;
 const getReply = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { commentId } = req.params;
-        const replies = (yield db_1.default.query("select * from comments where replyto = $1", [
-            commentId,
-        ])).rows;
+        const replies = (yield db_1.default.query("select c.*, u.username from comments c join users u on c.userid = u.id where c.replyto = $1", [commentId])).rows;
         res
             .status(200)
             .json(commentsResponseCreator(false, "Replies received", replies));

@@ -147,6 +147,7 @@ export const createComment = createAsyncThunk(
         toast.error(jsonRes.message, toastOpts);
       }
       dispatch(incrementCommentCounter());
+      toast.success(jsonRes.message, toastOpts);
       return { ...jsonRes.data, username: commentObj.username };
     } catch (error) {
       console.log(error);

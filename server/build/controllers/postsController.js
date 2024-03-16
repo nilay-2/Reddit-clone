@@ -51,25 +51,12 @@ const getPosts = (_, res) => __awaiter(void 0, void 0, void 0, function* () {
 });
 exports.getPosts = getPosts;
 const vote = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a;
     try {
-        const { postid, userid, isupvote } = req.body;
-        const post = (yield db_1.default.query("select votes from posts where id = $1", [postid])).rows[0];
-        const isAlreadyLiked = (_a = post.votes) === null || _a === void 0 ? void 0 : _a.find((vote) => {
-            return vote === userid;
-        });
-        if (isAlreadyLiked) {
-            const updatedPost = (yield db_1.default.query("update posts set upvotes = upvotes - 1, votes = array_remove(votes, $1) where id = $2 returning *", [userid, postid])).rows[0];
-            res
-                .status(200)
-                .json(postsResponseCreator(false, "Removed a like", updatedPost));
-        }
-        else {
-            const updatedPost = (yield db_1.default.query("update posts set upvotes = upvotes + 1, votes = array_append(votes, $1) where id = $2 returning *", [userid, postid])).rows[0];
-            res
-                .status(200)
-                .json(postsResponseCreator(false, "Added a like", updatedPost));
-        }
+        const { postid, userid } = req.body;
+        const updatedPost = (yield db_1.default.query("UPDATE posts SET upvotes = upvotes + (CASE WHEN $2::int = ANY(votes) THEN -1 ELSE 1 END), votes = (CASE WHEN $2::int = ANY(votes) THEN array_remove(votes, $2::int) ELSE array_append(votes, $2::int) end) WHERE id = $1 returning *", [postid, userid])).rows[0];
+        res
+            .status(200)
+            .json(postsResponseCreator(false, "vote updated", updatedPost));
     }
     catch (error) {
         console.log(error);

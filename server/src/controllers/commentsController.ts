@@ -161,9 +161,10 @@ export const getReply = async (req: Request, res: Response) => {
   try {
     const { commentId } = req.params;
     const replies: Array<Comment> = (
-      await client.query("select * from comments where replyto = $1", [
-        commentId,
-      ])
+      await client.query(
+        "select c.*, u.username from comments c join users u on c.userid = u.id where c.replyto = $1",
+        [commentId]
+      )
     ).rows;
     res
       .status(200)

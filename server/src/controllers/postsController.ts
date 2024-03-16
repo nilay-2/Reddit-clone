@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import { Request, Response, query } from "express";
 import client from "../db";
 import { ServiceResponse } from "../utils/ResponseInterface";
 
@@ -80,36 +80,16 @@ export const getPosts = async (_: Request, res: Response) => {
 
 export const vote = async (req: Request, res: Response) => {
   try {
-    const { postid, userid, isupvote } = req.body;
-    const post: Post = (
-      await client.query("select votes from posts where id = $1", [postid])
+    const { postid, userid } = req.body;
+    const updatedPost: Post = (
+      await client.query(
+        "UPDATE posts SET upvotes = upvotes + (CASE WHEN $2::int = ANY(votes) THEN -1 ELSE 1 END), votes = (CASE WHEN $2::int = ANY(votes) THEN array_remove(votes, $2::int) ELSE array_append(votes, $2::int) end) WHERE id = $1 returning *",
+        [postid, userid]
+      )
     ).rows[0];
-
-    const isAlreadyLiked = post.votes?.find((vote) => {
-      return vote === userid;
-    });
-
-    if (isAlreadyLiked) {
-      const updatedPost: Post = (
-        await client.query(
-          "update posts set upvotes = upvotes - 1, votes = array_remove(votes, $1) where id = $2 returning *",
-          [userid, postid]
-        )
-      ).rows[0];
-      res
-        .status(200)
-        .json(postsResponseCreator(false, "Removed a like", updatedPost));
-    } else {
-      const updatedPost: Post = (
-        await client.query(
-          "update posts set upvotes = upvotes + 1, votes = array_append(votes, $1) where id = $2 returning *",
-          [userid, postid]
-        )
-      ).rows[0];
-      res
-        .status(200)
-        .json(postsResponseCreator(false, "Added a like", updatedPost));
-    }
+    res
+      .status(200)
+      .json(postsResponseCreator(false, "vote updated", updatedPost));
   } catch (error) {
     console.log(error);
     res.status(400).json(votesResponseCreator(true, (error as Error).message));
