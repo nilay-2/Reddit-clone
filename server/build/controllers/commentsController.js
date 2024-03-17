@@ -57,12 +57,18 @@ exports.getAllComments = getAllComments;
 const deleteComment = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { commentId, postId } = req.params;
-        const { replyTo } = req.body;
+        const { replyTo, replies } = req.body;
         yield db_1.default.query("BEGIN");
-        const deletedComment = (yield db_1.default.query("delete from comments where id = $1 returning id", [
+        // 1. delete comment from the table
+        const deletedComment = (yield db_1.default.query("delete from comments where id = $1 returning *", [
             commentId,
         ])).rows[0];
-        yield db_1.default.query("update posts set comments = comments - 1 where id = $1", [postId]);
+        // 2. update the post with comments decremented to (no. replies + 1)
+        yield db_1.default.query("update posts set comments = comments - $2 where id = $1", [postId, +replies + 1]);
+        // 3. update the replies count of the parent comment
+        if (replyTo) {
+            yield db_1.default.query("update comments set replies = replies - 1 where id = $1", [replyTo]);
+        }
         yield db_1.default.query("COMMIT");
         res
             .status(200)

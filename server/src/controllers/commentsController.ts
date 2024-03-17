@@ -92,18 +92,30 @@ export const getAllComments = async (req: Request, res: Response) => {
 export const deleteComment = async (req: Request, res: Response) => {
   try {
     const { commentId, postId } = req.params;
-    const { replyTo } = req.body;
+    const { replyTo, replies } = req.body;
+
     await client.query("BEGIN");
+
+    // 1. delete comment from the table
     const deletedComment: Comment = (
-      await client.query("delete from comments where id = $1 returning id", [
+      await client.query("delete from comments where id = $1 returning *", [
         commentId,
       ])
     ).rows[0];
 
+    // 2. update the post with comments decremented to (no. replies + 1)
     await client.query(
-      "update posts set comments = comments - 1 where id = $1",
-      [postId]
+      "update posts set comments = comments - $2 where id = $1",
+      [postId, +replies + 1]
     );
+
+    // 3. update the replies count of the parent comment
+    if (replyTo) {
+      await client.query(
+        "update comments set replies = replies - 1 where id = $1",
+        [replyTo]
+      );
+    }
     await client.query("COMMIT");
     res
       .status(200)

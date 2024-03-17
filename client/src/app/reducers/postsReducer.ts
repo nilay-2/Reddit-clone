@@ -81,9 +81,9 @@ const postsReducer = createSlice({
         selectedPost: null,
       };
     },
-    decrementCommentCounter: (state) => {
+    decrementCommentCounter: (state, action: PayloadAction<number>) => {
       if (state.selectedPost) {
-        state.selectedPost.comments -= 1;
+        state.selectedPost.comments -= +action.payload;
       }
     },
     incrementCommentCounter: (state) => {

@@ -66,20 +66,52 @@ const commentsReducer = createSlice({
       deleteComment.fulfilled,
       (state, action: PayloadAction<Comment>) => {
         if (action.payload && action.payload.id) {
-          const filteredComments = state.comments.filter((comment) => {
-            return comment.id !== action.payload.id;
-          });
-          const parentComment = findCommentById(
-            state.comments,
-            action.payload.id
-          );
-          if (parentComment && parentComment.replies) {
-            parentComment.replies = +parentComment.replies - 1;
+          if (action.payload.replyto) {
+            // 1. get the parent comment
+            const parentComment = findCommentById(
+              state.comments,
+              action.payload.replyto
+            );
+            // 2. remove the current comment from the parent's array
+            if (parentComment?.replymsg && parentComment.replies) {
+              const filteredReplies = parentComment?.replymsg?.filter(
+                (reply) => {
+                  return reply.id !== action.payload.id;
+                }
+              );
+
+              parentComment.replymsg = filteredReplies;
+
+              // 3. update the parent comment's reply count
+              parentComment.replies = +parentComment.replies - 1;
+            }
+            // 4. update the posts comment count ✔
+          } else {
+            // 1. get the current comment and remove it from the array of comments list of post
+            const filteredComments = state.comments.filter((comment) => {
+              return comment.id !== action.payload.id;
+            });
+            return {
+              ...state,
+              comments: filteredComments,
+            };
+            // 2. update the post comment's count ✔
           }
-          return {
-            ...state,
-            comments: filteredComments,
-          };
+
+          // {const filteredComments = state.comments.filter((comment) => {
+          //   return comment.id !== action.payload.id;
+          // });
+          // const parentComment = findCommentById(
+          //   state.comments,
+          //   action.payload.id
+          // );
+          // if (parentComment && parentComment.replies) {
+          //   parentComment.replies = +parentComment.replies - 1;
+          // }
+          // return {
+          //   ...state,
+          //   comments: filteredComments,
+          // };}
         }
       }
     );
@@ -91,9 +123,9 @@ const commentsReducer = createSlice({
             state.comments,
             action.payload.replyto
           );
-          console.log(parentComment);
-          if (parentComment && parentComment.replies) {
-            parentComment.replies = +parentComment.replies + 1;
+          // console.log(parentComment);
+          if (parentComment !== null && parentComment !== undefined) {
+            parentComment.replies = +(parentComment.replies ?? 0) + 1;
             parentComment.replymsg?.push(action.payload);
           }
         }
@@ -190,10 +222,12 @@ export const deleteComment = createAsyncThunk(
       postId,
       replyTo,
       commentId,
+      replies,
     }: {
       postId: number;
       replyTo: number | null;
       commentId: number;
+      replies: number;
     },
     { dispatch }
   ) => {
@@ -207,7 +241,7 @@ export const deleteComment = createAsyncThunk(
             "Content-Type": "application/json",
             "Access-Control-Allow-Origin": getAccessControlAllowOriginUrl(),
           },
-          body: JSON.stringify({ replyTo }),
+          body: JSON.stringify({ replyTo, replies }),
         }
       );
       const jsonRes = await res.json();
@@ -216,7 +250,7 @@ export const deleteComment = createAsyncThunk(
         toast.error(jsonRes.message, toastOpts);
         return jsonRes.data;
       }
-      dispatch(decrementCommentCounter());
+      dispatch(decrementCommentCounter(+jsonRes.data.replies + 1));
       toast.success(jsonRes.message, toastOpts);
       return jsonRes.data;
     } catch (error) {

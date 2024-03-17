@@ -20,15 +20,14 @@ const CommentItem: React.FC<{ comment: Comment }> = ({ comment }) => {
 
     if (comment.userid !== authState.id) return;
 
-    if (!comment.replyto) {
-      dispatch(
-        deleteComment({
-          postId: postState.selectedPost?.id,
-          replyTo: comment.replyto,
-          commentId: comment.id,
-        })
-      );
-    }
+    dispatch(
+      deleteComment({
+        postId: postState.selectedPost?.id,
+        replyTo: comment.replyto,
+        commentId: comment.id,
+        replies: comment.replies || 0,
+      })
+    );
   };
 
   return (
