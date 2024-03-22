@@ -45,7 +45,7 @@ export const createPost = async (req: Request, res: Response) => {
 
     const post: Post = (
       await client.query(
-        "insert into posts (createdat, authorid, title, htmlbody, textbody) values ($1, $2, $3, $4, $5) returning id, createdat, authorid, title, htmlbody, comments, upvotes",
+        "insert into posts (createdat, authorid, title, htmlbody, textbody) values ($1, $2, $3, $4, $5) returning id, createdat, authorid, title, htmlbody, comments, upvotes, votes",
         [createdAt, authorId, title, htmlBody, textBody]
       )
     ).rows[0];
@@ -60,11 +60,14 @@ export const createPost = async (req: Request, res: Response) => {
   }
 };
 
-export const getPosts = async (_: Request, res: Response) => {
+export const getPosts = async (req: Request, res: Response) => {
   try {
+    const { offset } = req.query;
+
     const posts: Array<Post> = (
       await client.query(
-        "select p.*, u.username from posts p join users u on p.authorid = u.id order by p.createdat desc"
+        "select p.*, u.username from posts p join users u on p.authorid = u.id order by p.createdat desc limit 5 offset $1",
+        [offset]
       )
     ).rows;
     res

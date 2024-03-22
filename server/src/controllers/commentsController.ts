@@ -46,13 +46,7 @@ export const createComment = async (req: Request, res: Response) => {
     await client.query("COMMIT");
     res
       .status(200)
-      .json(
-        commentsResponseCreator(
-          false,
-          `Comment created for postid: ${postId}`,
-          comment
-        )
-      );
+      .json(commentsResponseCreator(false, `Comment added`, comment));
   } catch (error) {
     await client.query("ROLLBACK");
     console.log(error);

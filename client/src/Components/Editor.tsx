@@ -7,18 +7,9 @@ import MenuBar from "./MenuBar";
 import Placeholder from "@tiptap/extension-placeholder";
 import TextareaAutosize from "react-textarea-autosize";
 import { RootState, AppDispatch } from "../app/store";
-import { useSelector } from "react-redux";
-import { toast } from "react-toastify";
-import { toastOpts } from "../app/reducers/authReducer";
-import { getFetchUrl, getAccessControlAllowOriginUrl } from "../utils/appUrl";
-
-interface PostData {
-  createdAt: number;
-  authorId: number;
-  title: string;
-  textBody: string;
-  htmlBody: string;
-}
+import { useDispatch, useSelector } from "react-redux";
+import { createPost } from "../app/reducers/postsReducer";
+import { PostData } from "../app/reducers/postsReducer";
 
 const defaultContent = {
   type: "doc",
@@ -48,7 +39,7 @@ const Editor: React.FC = () => {
 
   // redux state
   const authState = useSelector((state: RootState) => state.auth);
-
+  const dispatch = useDispatch<AppDispatch>();
   // title state
   const [title, setTitle] = useState<string>("");
 
@@ -79,9 +70,10 @@ const Editor: React.FC = () => {
       title: title,
       htmlBody: htmlBody,
       textBody: textBody,
+      username: authState.username,
     };
 
-    await submitPostData(postData);
+    dispatch(createPost(postData));
     clearInputs(defaultContent);
   };
 
@@ -90,29 +82,7 @@ const Editor: React.FC = () => {
     editor.chain().setContent(content).run();
   };
 
-  const submitPostData = async (postData: PostData) => {
-    try {
-      const res = await fetch(`${getFetchUrl()}/api/posts/createpost`, {
-        method: "POST",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-          "Access-Control-Allow-Origin": getAccessControlAllowOriginUrl(),
-        },
-        body: JSON.stringify(postData),
-      });
-
-      const jsonRes = await res.json();
-      console.log(jsonRes);
-      if (jsonRes.error) {
-        toast.error(jsonRes.message, toastOpts);
-      } else {
-        toast.success(jsonRes.message, toastOpts);
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  };
+  const submitPostData = async (postData: PostData) => {};
 
   return (
     <>

@@ -12,6 +12,7 @@ const Header: React.FC = () => {
 
   // redux state
   const authState = useSelector((state: RootState) => state.auth);
+  const postState = useSelector((state: RootState) => state.posts);
   const dispatch = useDispatch<AppDispatch>();
 
   const authHandler = () => {
@@ -19,8 +20,8 @@ const Header: React.FC = () => {
   };
 
   useEffect(() => {
-    dispatch(fetchPosts());
-  }, []);
+    dispatch(fetchPosts({ page: postState.page, offset: postState.offset }));
+  }, [postState.page]);
 
   useEffect(() => {
     dispatch(verify());

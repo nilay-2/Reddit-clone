@@ -18,10 +18,23 @@ export interface Post {
   username?: string;
 }
 
+export interface PostData {
+  createdAt: number;
+  authorId: number;
+  title: string;
+  textBody: string;
+  htmlBody: string;
+  username: string;
+}
+
 interface PostState {
   posts: Array<Post>;
   selectedPost: Post | null;
   isLoading: boolean;
+  nextSetLoading: boolean;
+  page: number;
+  offset: number;
+  terminateCall: boolean;
 }
 
 export interface Vote {
@@ -33,6 +46,10 @@ const initialState: PostState = {
   posts: [],
   selectedPost: null,
   isLoading: true,
+  nextSetLoading: true,
+  page: 0,
+  offset: 0,
+  terminateCall: false,
 };
 
 const postsReducer = createSlice({
@@ -91,21 +108,43 @@ const postsReducer = createSlice({
         state.selectedPost.comments = +state.selectedPost.comments + 1;
       }
     },
+    nextPage: (state) => {
+      state.page += 1;
+      state.offset += 5;
+    },
   },
   extraReducers(builder) {
+    builder.addCase(
+      createPost.fulfilled,
+      (state, action: PayloadAction<Post>) => {
+        if (action.payload) {
+          state.posts.unshift(action.payload);
+        }
+      }
+    );
+
     builder.addCase(fetchPosts.pending, (state) => {
-      return {
-        ...state,
-        isLoading: true,
-      };
+      if (state.page === 0) {
+        state.isLoading = true;
+      } else {
+        state.nextSetLoading = true;
+      }
     });
     builder.addCase(
       fetchPosts.fulfilled,
       (state, action: PayloadAction<Array<Post>>) => {
+        if (!action.payload.length) {
+          return {
+            ...state,
+            nextSetLoading: false,
+            terminateCall: true,
+          };
+        }
         return {
           ...state,
-          posts: action.payload,
+          posts: [...state.posts, ...action.payload],
           isLoading: false,
+          nextSetLoading: false,
         };
       }
     );
@@ -121,27 +160,63 @@ const postsReducer = createSlice({
   },
 });
 
-export const fetchPosts = createAsyncThunk("posts/fetchPosts", async () => {
-  try {
-    const res = await fetch(`${getFetchUrl()}/api/posts/`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        "Access-Control-Allow-Origin": getAccessControlAllowOriginUrl(),
-      },
-    });
+export const createPost = createAsyncThunk(
+  "posts/createPost",
+  async (postData: PostData) => {
+    try {
+      const res = await fetch(`${getFetchUrl()}/api/posts/createpost`, {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+          "Access-Control-Allow-Origin": getAccessControlAllowOriginUrl(),
+        },
+        body: JSON.stringify(postData),
+      });
 
-    const jsonRes = await res.json();
-    console.log(jsonRes);
-    if (jsonRes.error) {
-      toast.error(jsonRes.message, toastOpts);
+      const jsonRes = await res.json();
+      console.log(jsonRes);
+      if (jsonRes.error) {
+        toast.error(jsonRes.message, toastOpts);
+      } else {
+        toast.success(jsonRes.message, toastOpts);
+        const post: Post = { ...jsonRes.data, username: postData.username };
+        return post;
+      }
+      return jsonRes.data;
+    } catch (error) {
+      console.log(error);
     }
-    return jsonRes.data;
-  } catch (error) {
-    console.log(error);
-    return initialState;
   }
-});
+);
+
+export const fetchPosts = createAsyncThunk(
+  "posts/fetchPosts",
+  async ({ page, offset }: { page: number; offset: number }) => {
+    try {
+      const res = await fetch(
+        `${getFetchUrl()}/api/posts?page=${page}&offset=${offset}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            "Access-Control-Allow-Origin": getAccessControlAllowOriginUrl(),
+          },
+        }
+      );
+
+      const jsonRes = await res.json();
+      console.log(jsonRes);
+      if (jsonRes.error) {
+        toast.error(jsonRes.message, toastOpts);
+      }
+      return jsonRes.data;
+    } catch (error) {
+      console.log(error);
+      return initialState;
+    }
+  }
+);
 
 export const vote = createAsyncThunk("posts/vote", async (vote: Vote) => {
   try {
@@ -193,6 +268,7 @@ export const {
   removeSelectedPost,
   decrementCommentCounter,
   incrementCommentCounter,
+  nextPage,
 } = postsReducer.actions;
 
 export default postsReducer.reducer;

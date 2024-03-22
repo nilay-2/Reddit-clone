@@ -10,11 +10,9 @@ function App() {
     <div
       className="max-w-5xl mx-auto text-white flex gap-3 justify-between md:p-0 p-1"
       style={{
-        // maxWidth: "1300px",
         height: "calc(100vh - 70px)",
       }}
     >
-      {/* <SideBar /> */}
       <Feed />
       <TopCommunities />
     </div>

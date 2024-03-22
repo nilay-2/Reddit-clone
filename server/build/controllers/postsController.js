@@ -24,7 +24,7 @@ const createPost = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
     try {
         // create new post
         const { createdAt, authorId, title, htmlBody, textBody } = req.body;
-        const post = (yield db_1.default.query("insert into posts (createdat, authorid, title, htmlbody, textbody) values ($1, $2, $3, $4, $5) returning id, createdat, authorid, title, htmlbody, comments, upvotes", [createdAt, authorId, title, htmlBody, textBody])).rows[0];
+        const post = (yield db_1.default.query("insert into posts (createdat, authorid, title, htmlbody, textbody) values ($1, $2, $3, $4, $5) returning id, createdat, authorid, title, htmlbody, comments, upvotes, votes", [createdAt, authorId, title, htmlBody, textBody])).rows[0];
         res
             .status(200)
             .json(postsResponseCreator(false, "Post created successfully", post));
@@ -35,9 +35,10 @@ const createPost = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
     }
 });
 exports.createPost = createPost;
-const getPosts = (_, res) => __awaiter(void 0, void 0, void 0, function* () {
+const getPosts = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const posts = (yield db_1.default.query("select p.*, u.username from posts p join users u on p.authorid = u.id order by p.createdat desc")).rows;
+        const { offset } = req.query;
+        const posts = (yield db_1.default.query("select p.*, u.username from posts p join users u on p.authorid = u.id order by p.createdat desc limit 5 offset $1", [offset])).rows;
         res
             .status(200)
             .json(postsResponseCreator(false, "Posts retreived successfully", posts));

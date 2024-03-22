@@ -27,7 +27,7 @@ const createComment = (req, res) => __awaiter(void 0, void 0, void 0, function* 
         yield db_1.default.query("COMMIT");
         res
             .status(200)
-            .json(commentsResponseCreator(false, `Comment created for postid: ${postId}`, comment));
+            .json(commentsResponseCreator(false, `Comment added`, comment));
     }
     catch (error) {
         yield db_1.default.query("ROLLBACK");
