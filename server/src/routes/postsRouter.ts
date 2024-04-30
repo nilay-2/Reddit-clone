@@ -11,6 +11,7 @@ const postsRouter: express.Router = express.Router();
 // get all posts
 postsRouter.route("/").get(getPosts);
 
+// get post by id
 postsRouter.route("/:postId").get(getPostById);
 
 // verify if user is logged in

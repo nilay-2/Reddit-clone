@@ -9,9 +9,10 @@ const authController_1 = require("../controllers/authController");
 const postsRouter = express_1.default.Router();
 // get all posts
 postsRouter.route("/").get(postsController_1.getPosts);
+// get post by id
+postsRouter.route("/:postId").get(postsController_1.getPostById);
 // verify if user is logged in
 postsRouter.use(authController_1.verify);
 postsRouter.route("/createpost").post(postsController_1.createPost);
 postsRouter.route("/vote").post(postsController_1.vote);
-postsRouter.route("/:postId").get(postsController_1.getPostById);
 exports.default = postsRouter;
