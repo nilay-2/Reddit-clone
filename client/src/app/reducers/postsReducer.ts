@@ -246,7 +246,6 @@ export const getPostById = createAsyncThunk(
     try {
       const res = await fetch(`${getFetchUrl()}/api/posts/${postId}`, {
         method: "GET",
-        credentials: "include",
         headers: {
           "Content-Type": "application/json",
           "Access-Control-Allow-Origin": getAccessControlAllowOriginUrl(),
