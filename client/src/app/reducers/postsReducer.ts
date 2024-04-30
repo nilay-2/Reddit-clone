@@ -151,6 +151,7 @@ const postsReducer = createSlice({
     builder.addCase(
       getPostById.fulfilled,
       (state, action: PayloadAction<Post>) => {
+        console.log(action);
         return {
           ...state,
           selectedPost: action.payload,

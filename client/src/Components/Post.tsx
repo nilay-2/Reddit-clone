@@ -6,6 +6,8 @@ import "../css/style.css";
 import { isPostLiked } from "../utils/isPostLiked";
 import { useNavigate } from "react-router-dom";
 import formatTimeAgo from "../utils/timeFormat";
+import { toastOpts } from "../app/reducers/authReducer";
+import { toast } from "react-toastify";
 // import * as DOMPurify from "dompurify";
 // const sanitizeHTMLBody = () => ({
 //   __html: DOMPurify.sanitize(post.htmlbody),
@@ -43,6 +45,10 @@ const PostElement: React.FC<{
   };
 
   const voteHandler = () => {
+    if (!authState.id) {
+      toast.error("Please login", toastOpts);
+      return;
+    }
     const voteObj = {
       userid: authState.id,
       postid: post.id,
@@ -79,13 +85,6 @@ const PostElement: React.FC<{
               <IsLiked />
             </button>
           </div>
-          {/* <hr /> */}
-          {/* <div>
-            <div className="text-sm">{post.downvotes}</div>
-            <button>
-              <i className="bi bi-hand-thumbs-down hover:text-red-600 cursor-pointer text-slate-300"></i>
-            </button>
-          </div> */}
         </div>
       </div>
       <div
@@ -129,12 +128,6 @@ const PostElement: React.FC<{
               </button>
               <span className="text-xs">{post.upvotes}</span>
             </div>
-            {/* <div className="flex gap-1 items-center p-2">
-              <button className="rounded-full">
-              <i className="bi bi-hand-thumbs-down hover:text-red-600"></i>
-              </button>
-              <span className="text-xs">{post.downvotes}</span>
-            </div> */}
           </div>
           <div className="flex gap-1 items-center p-2 bg-stone-800 rounded-full px-4">
             <button className="rounded-full">

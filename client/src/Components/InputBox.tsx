@@ -3,6 +3,8 @@ import { useState } from "react";
 import { AppDispatch, RootState } from "../app/store";
 import { useSelector, useDispatch } from "react-redux";
 import { createComment, createReply } from "../app/reducers/commentsReducer";
+import { toast } from "react-toastify";
+import { toastOpts } from "../app/reducers/authReducer";
 const InputBox: React.FC<{
   typeOfMsg: string;
   replyToCommentId: number | null;
@@ -56,7 +58,7 @@ const InputBox: React.FC<{
             } hover:bg-blue-500 active:bg-blue-600`}
             disabled={comment ? false : true}
             onClick={() => {
-              if (postState.selectedPost) {
+              if (postState.selectedPost && authState.id) {
                 if (typeOfMsg === "comment") {
                   dispatch(
                     createComment({
@@ -78,6 +80,9 @@ const InputBox: React.FC<{
                   );
                 }
                 setComment("");
+              } else {
+                toast.error("Please login", toastOpts);
+                return;
               }
             }}
           >
