@@ -4,9 +4,13 @@ import {
   getPosts,
   vote,
   getPostById,
+  searchByQuery,
 } from "../controllers/postsController";
 import { verify } from "../controllers/authController";
 const postsRouter: express.Router = express.Router();
+
+// search for posts by query
+postsRouter.route("/search").get(searchByQuery);
 
 // get all posts
 postsRouter.route("/").get(getPosts);

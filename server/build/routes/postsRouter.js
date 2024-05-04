@@ -7,6 +7,8 @@ const express_1 = __importDefault(require("express"));
 const postsController_1 = require("../controllers/postsController");
 const authController_1 = require("../controllers/authController");
 const postsRouter = express_1.default.Router();
+// search for posts by query
+postsRouter.route("/search").get(postsController_1.searchByQuery);
 // get all posts
 postsRouter.route("/").get(postsController_1.getPosts);
 // get post by id

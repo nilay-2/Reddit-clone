@@ -12,8 +12,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getPostById = exports.vote = exports.getPosts = exports.createPost = void 0;
+exports.searchByQuery = exports.getPostById = exports.vote = exports.getPosts = exports.createPost = void 0;
 const db_1 = __importDefault(require("../db"));
+const appUrl_1 = require("../utils/appUrl");
 const postsResponseCreator = (error, message, data = null) => {
     return { error: error, message: message, data: data };
 };
@@ -79,3 +80,16 @@ const getPostById = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
     }
 });
 exports.getPostById = getPostById;
+const searchByQuery = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const { query } = req.query;
+        const { andStr, orStr } = (0, appUrl_1.tsQuery)(query);
+        const posts = (yield db_1.default.query(`SELECT *, ts_rank(vector_document, to_tsquery($1::text)) AS rank FROM posts WHERE vector_document @@ to_tsquery($2::text) OR vector_document @@ to_tsquery($3::text) ORDER BY rank DESC`, [andStr, andStr, orStr])).rows;
+        res.status(200).json(postsResponseCreator(false, "Data recieved", posts));
+    }
+    catch (error) {
+        console.log(error);
+        res.status(400).json(postsResponseCreator(false, error.message));
+    }
+});
+exports.searchByQuery = searchByQuery;

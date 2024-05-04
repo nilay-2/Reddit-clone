@@ -1,6 +1,7 @@
 import { Request, Response, query } from "express";
 import client from "../db";
 import { ServiceResponse } from "../utils/ResponseInterface";
+import { tsQuery } from "../utils/appUrl";
 
 interface Post {
   createdAt: number;
@@ -115,6 +116,26 @@ export const getPostById = async (req: Request, res: Response) => {
       .json(
         postsResponseCreator(false, `Post received with id: ${postId}`, post)
       );
+  } catch (error) {
+    console.log(error);
+    res.status(400).json(postsResponseCreator(false, (error as Error).message));
+  }
+};
+
+export const searchByQuery = async (req: Request, res: Response) => {
+  try {
+    const { query } = req.query;
+
+    const { andStr, orStr } = tsQuery(query as string);
+
+    const posts: Array<Post> = (
+      await client.query(
+        `SELECT *, ts_rank(vector_document, to_tsquery($1::text)) AS rank FROM posts WHERE vector_document @@ to_tsquery($2::text) OR vector_document @@ to_tsquery($3::text) ORDER BY rank DESC`,
+        [andStr, andStr, orStr]
+      )
+    ).rows;
+
+    res.status(200).json(postsResponseCreator(false, "Data recieved", posts));
   } catch (error) {
     console.log(error);
     res.status(400).json(postsResponseCreator(false, (error as Error).message));

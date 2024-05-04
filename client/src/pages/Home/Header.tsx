@@ -9,6 +9,7 @@ import { fetchPosts } from "../../app/reducers/postsReducer";
 import { useNavigate } from "react-router-dom";
 const Header: React.FC = () => {
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
   // toggle state
   const [openAuth, setOpenAuth] = useState<Boolean>(false);
   const [query, setQuery] = useState<string>("");
