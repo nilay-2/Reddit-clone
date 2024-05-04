@@ -1,15 +1,17 @@
 import React, { useState, useEffect } from "react";
-import { Outlet, Link } from "react-router-dom";
+import { Outlet, Link, useSearchParams } from "react-router-dom";
 import Auth from "./Auth";
 import { verify } from "../../app/reducers/authReducer";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../../app/store";
 import UserProfileBar from "../../Components/UserProfileBar";
 import { fetchPosts } from "../../app/reducers/postsReducer";
+import { useNavigate } from "react-router-dom";
 const Header: React.FC = () => {
+  const navigate = useNavigate();
   // toggle state
   const [openAuth, setOpenAuth] = useState<Boolean>(false);
-
+  const [query, setQuery] = useState<string>("");
   // redux state
   const authState = useSelector((state: RootState) => state.auth);
   const postState = useSelector((state: RootState) => state.posts);
@@ -26,6 +28,17 @@ const Header: React.FC = () => {
   useEffect(() => {
     dispatch(verify());
   }, []);
+
+  const searchHandler: React.FormEventHandler<HTMLFormElement> = (e) => {
+    e.preventDefault();
+    navigate(`/search?q=${query}`);
+  };
+
+  const searchChangeHandler: React.ChangeEventHandler<HTMLInputElement> = (
+    e
+  ) => {
+    setQuery(e.target.value);
+  };
 
   const IsLoggedIn: React.FC = () => {
     if (authState.loading) {
@@ -62,14 +75,16 @@ const Header: React.FC = () => {
             className="search-bar grow rounded-full px-4 max-w-4xl flex items-center"
             style={{ backgroundColor: "#28282B" }}
           >
-            <form className="w-full">
+            <form className="w-full" onSubmit={searchHandler}>
               <div className="input-group flex items-center">
                 <i className="bi bi-search text-xl h-full p-1 text-slate-600"></i>
                 <input
                   type="text"
-                  placeholder="Search Reddit"
+                  placeholder="Search...."
                   className="w-full p-2 outline-none text-white"
                   style={{ backgroundColor: "#28282B" }}
+                  value={query}
+                  onChange={searchChangeHandler}
                 />
               </div>
             </form>

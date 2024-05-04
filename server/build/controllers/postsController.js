@@ -24,7 +24,7 @@ const createPost = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
     try {
         // create new post
         const { createdAt, authorId, title, htmlBody, textBody } = req.body;
-        const post = (yield db_1.default.query("insert into posts (createdat, authorid, title, htmlbody, textbody) values ($1, $2, $3, $4, $5) returning id, createdat, authorid, title, htmlbody, comments, upvotes, votes", [createdAt, authorId, title, htmlBody, textBody])).rows[0];
+        const post = (yield db_1.default.query("insert into posts (createdat, authorid, title, htmlbody, textbody, vector_document) values ($1, $2, $3, $4, $5, to_tsvector('english', $5 || ' ' || $3)) returning id, createdat, authorid, title, htmlbody, comments, upvotes, votes", [createdAt, authorId, title, htmlBody, textBody])).rows[0];
         res
             .status(200)
             .json(postsResponseCreator(false, "Post created successfully", post));

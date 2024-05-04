@@ -27,7 +27,7 @@ const Feed: React.FC = () => {
 
   return (
     <div
-      className="grow md:px-2 px-1 pb-2 flex flex-col gap-4 overflow-auto"
+      className="grow md:px-2 px-1 pb-2 flex flex-col gap-4 overflow-auto border border-red-500"
       ref={scrollRef}
       onScroll={(e: React.UIEvent<HTMLDivElement, UIEvent>) => {
         const scrollY = `${e.currentTarget.scrollTop}`;

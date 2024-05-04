@@ -1,10 +1,6 @@
-import { useEffect } from "react";
-import SideBar from "./SideBar";
 import TopCommunities from "./TopCommunities";
 import Feed from "./Feed";
-import { AppDispatch } from "../../app/store";
-import { useDispatch } from "react-redux";
-import { fetchPosts } from "../../app/reducers/postsReducer";
+
 function App() {
   return (
     <div
