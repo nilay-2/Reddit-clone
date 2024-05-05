@@ -91,7 +91,7 @@ const PostElement: React.FC<{
         className="posts-content w-full md:p-4 p-2"
         onClick={() => {
           if (overview) {
-            navigate(`posts/${post.id}`);
+            navigate(`/posts/${post.id}`);
           }
         }}
       >

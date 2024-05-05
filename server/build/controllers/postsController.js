@@ -84,7 +84,7 @@ const searchByQuery = (req, res) => __awaiter(void 0, void 0, void 0, function* 
     try {
         const { query } = req.query;
         const { andStr, orStr } = (0, appUrl_1.tsQuery)(query);
-        const posts = (yield db_1.default.query(`SELECT *, ts_rank(vector_document, to_tsquery($1::text)) AS rank FROM posts WHERE vector_document @@ to_tsquery($2::text) OR vector_document @@ to_tsquery($3::text) ORDER BY rank DESC`, [andStr, andStr, orStr])).rows;
+        const posts = (yield db_1.default.query(`SELECT u.username, p.*, ts_rank(vector_document, to_tsquery($1::text)) AS rank FROM posts p join users u on u.id = p.authorid  WHERE vector_document @@ to_tsquery($2::text) OR vector_document @@ to_tsquery($3::text) ORDER BY rank DESC`, [andStr, andStr, orStr])).rows;
         res.status(200).json(postsResponseCreator(false, "Data recieved", posts));
     }
     catch (error) {

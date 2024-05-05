@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Outlet, Link, useSearchParams } from "react-router-dom";
+import { Outlet, Link } from "react-router-dom";
 import Auth from "./Auth";
 import { verify } from "../../app/reducers/authReducer";
 import { useDispatch, useSelector } from "react-redux";
@@ -7,15 +7,21 @@ import { AppDispatch, RootState } from "../../app/store";
 import UserProfileBar from "../../Components/UserProfileBar";
 import { fetchPosts } from "../../app/reducers/postsReducer";
 import { useNavigate } from "react-router-dom";
+import {
+  setSearchQuery,
+  fullTextSearch,
+} from "../../app/reducers/searchReducer";
+import { useSearchParams } from "react-router-dom";
 const Header: React.FC = () => {
   const navigate = useNavigate();
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [searchParams, _] = useSearchParams();
   // toggle state
   const [openAuth, setOpenAuth] = useState<Boolean>(false);
   const [query, setQuery] = useState<string>("");
   // redux state
   const authState = useSelector((state: RootState) => state.auth);
   const postState = useSelector((state: RootState) => state.posts);
+  const searchState = useSelector((state: RootState) => state.search);
   const dispatch = useDispatch<AppDispatch>();
 
   const authHandler = () => {
@@ -28,10 +34,17 @@ const Header: React.FC = () => {
 
   useEffect(() => {
     dispatch(verify());
+    if (searchState.query) {
+      dispatch(fullTextSearch(searchState.query));
+    } else {
+      dispatch(fullTextSearch(searchParams.get("q")!));
+    }
   }, []);
 
   const searchHandler: React.FormEventHandler<HTMLFormElement> = (e) => {
     e.preventDefault();
+    dispatch(setSearchQuery(query));
+    dispatch(fullTextSearch(query));
     navigate(`/search?q=${query}`);
   };
 

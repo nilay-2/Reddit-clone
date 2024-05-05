@@ -130,7 +130,7 @@ export const searchByQuery = async (req: Request, res: Response) => {
 
     const posts: Array<Post> = (
       await client.query(
-        `SELECT *, ts_rank(vector_document, to_tsquery($1::text)) AS rank FROM posts WHERE vector_document @@ to_tsquery($2::text) OR vector_document @@ to_tsquery($3::text) ORDER BY rank DESC`,
+        `SELECT u.username, p.*, ts_rank(vector_document, to_tsquery($1::text)) AS rank FROM posts p join users u on u.id = p.authorid  WHERE vector_document @@ to_tsquery($2::text) OR vector_document @@ to_tsquery($3::text) ORDER BY rank DESC`,
         [andStr, andStr, orStr]
       )
     ).rows;

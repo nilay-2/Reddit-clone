@@ -57,7 +57,7 @@ const PostDetail: React.FC = () => {
           onClick={() => {
             dispatch(removeSelectedPost());
             dispatch(reset());
-            navigate("/");
+            navigate(-1);
           }}
         >
           <i className="bi bi-arrow-left-circle text-2xl"></i>

@@ -12,7 +12,7 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Protect from "./Components/Protect";
 import PostDetail from "./pages/Post/PostDetail";
-import Search from "./pages/Search";
+import Search from "./pages/Search/Search";
 // routes
 const router = createBrowserRouter([
   {
