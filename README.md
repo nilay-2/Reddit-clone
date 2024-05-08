@@ -30,7 +30,7 @@ This is a social media web application built with React, Node.js, and PostgreSQL
 
 ## Demo
 
-[Link](https://reddit-clone-rosy-six.vercel.app/).
+Click here 👉 [Link] to visit the(https://reddit-clone-rosy-six.vercel.app/).
 
 ## Technologies Used
 
