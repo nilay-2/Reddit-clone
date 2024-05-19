@@ -82,7 +82,7 @@ const Header: React.FC = () => {
           <Link to={"/"}>
             <div className="logo flex items-center gap-1">
               <img src="/socialit.png" alt="" height={38} width={38} />
-              <span className="text-2xl bg-gradient-to-r from-pink-400 to-pink-700 text-transparent bg-clip-text font-bold">
+              <span className="text-2xl bg-gradient-to-r from-pink-400 to-pink-700 text-transparent bg-clip-text font-bold md:block hidden">
                 socialit
               </span>
             </div>
