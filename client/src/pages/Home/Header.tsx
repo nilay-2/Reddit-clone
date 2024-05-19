@@ -80,8 +80,11 @@ const Header: React.FC = () => {
         <header className="flex lg:gap-14 gap-3 justify-between p-1 items-center md:static sticky top-0">
           {/* logo */}
           <Link to={"/"}>
-            <div className="logo">
-              <i className="bi bi-reddit text-4xl text-orange-600"></i>
+            <div className="logo flex items-center gap-1">
+              <img src="/socialit.png" alt="" height={38} width={38} />
+              <span className="text-white text-3xl bg-gradient-to-r from-pink-400 to-pink-700 text-transparent bg-clip-text font-bold">
+                socialit
+              </span>
             </div>
           </Link>
           {/* search-bar */}
