@@ -201,7 +201,7 @@ export const fetchPosts = createAsyncThunk(
           method: "GET",
           headers: {
             "Content-Type": "application/json",
-            "Access-Control-Allow-Origin": getAccessControlAllowOriginUrl(),
+            // "Access-Control-Allow-Origin": getAccessControlAllowOriginUrl(),
           },
         }
       );
