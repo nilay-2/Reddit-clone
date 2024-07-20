@@ -163,7 +163,6 @@ export const createComment = createAsyncThunk(
           credentials: "include",
           headers: {
             "Content-Type": "application/json",
-            "Access-Control-Allow-Origin": getAccessControlAllowOriginUrl(),
           },
           body: JSON.stringify({
             userid: commentObj.userid,
@@ -198,7 +197,6 @@ export const getAllComments = createAsyncThunk(
           credentials: "include",
           headers: {
             "Content-Type": "application/json",
-            "Access-Control-Allow-Origin": getAccessControlAllowOriginUrl(),
           },
         }
       );
@@ -239,7 +237,6 @@ export const deleteComment = createAsyncThunk(
           credentials: "include",
           headers: {
             "Content-Type": "application/json",
-            "Access-Control-Allow-Origin": getAccessControlAllowOriginUrl(),
           },
           body: JSON.stringify({ replyTo, replies }),
         }
@@ -272,7 +269,6 @@ export const createReply = createAsyncThunk(
           credentials: "include",
           headers: {
             "Content-Type": "application/json",
-            "Access-Control-Allow-Origin": getAccessControlAllowOriginUrl(),
           },
           body: JSON.stringify({
             content: replyToObj.content,
@@ -306,7 +302,6 @@ export const getReplies = createAsyncThunk(
           credentials: "include",
           headers: {
             "Content-Type": "application/json",
-            "Access-Control-Allow-Origin": getAccessControlAllowOriginUrl(),
           },
         }
       );
