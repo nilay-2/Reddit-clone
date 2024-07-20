@@ -170,7 +170,6 @@ export const createPost = createAsyncThunk(
         credentials: "include",
         headers: {
           "Content-Type": "application/json",
-          "Access-Control-Allow-Origin": getAccessControlAllowOriginUrl(),
         },
         body: JSON.stringify(postData),
       });
@@ -201,7 +200,6 @@ export const fetchPosts = createAsyncThunk(
           method: "GET",
           headers: {
             "Content-Type": "application/json",
-            // "Access-Control-Allow-Origin": getAccessControlAllowOriginUrl(),
           },
         }
       );
@@ -226,7 +224,6 @@ export const vote = createAsyncThunk("posts/vote", async (vote: Vote) => {
       credentials: "include",
       headers: {
         "Content-Type": "application/json",
-        "Access-Control-Allow-Origin": getAccessControlAllowOriginUrl(),
       },
       body: JSON.stringify(vote),
     });
@@ -248,7 +245,6 @@ export const getPostById = createAsyncThunk(
         method: "GET",
         headers: {
           "Content-Type": "application/json",
-          "Access-Control-Allow-Origin": getAccessControlAllowOriginUrl(),
         },
       });
       const jsonRes = await res.json();
