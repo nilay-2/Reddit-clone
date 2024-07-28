@@ -34,6 +34,6 @@ Click on the link to visit the webapp (https://reddit-clone-rosy-six.vercel.app/
 
 ## Technologies Used
 
-- React
-- Node.js
-- PostgreSQL
+- React, Redux, tailwindcss
+- Node.js, Express.js, typescript
+- PostgreSQL (CockroachDB)
